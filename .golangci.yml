@@ -1,0 +1,48 @@
+linters:
+  enable-all: true
+  disable:
+    - godox
+    - godot
+    - exhaustivestruct
+    - gci
+    - wrapcheck
+    - gofumpt
+    - ireturn
+    - goerr113
+    #deprecated
+    - scopelint
+    - maligned
+    - interfacer
+    - golint
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - bodyclose
+        - funlen
+        - goconst
+        - dupl
+        - lll
+        - unparam
+        - forcetypeassert
+        - gocritic
+        - contextcheck
+        - varnamelen
+        - gomnd
+        - gochecknoglobals
+    - path: mock\.go
+      linters:
+        - funlen
+        - goconst
+        - dupl
+        - lll
+        - unparam
+        - forcetypeassert
+        - gomnd
+
+linters-settings:
+  tagliatelle:
+    case:
+      rules:
+        json: snake

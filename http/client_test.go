@@ -10,6 +10,7 @@ import (
 	"github.com/kevinanthony/gorps/http"
 	"github.com/kevinanthony/gorps/http/encoder"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
 

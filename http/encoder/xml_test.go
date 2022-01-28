@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/kevinanthony/gorps/http/encoder"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestNewXML(t *testing.T) {

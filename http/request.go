@@ -85,19 +85,19 @@ func (r *request) Header(header, value string) Request {
 }
 
 func NewRequest(client Client) Request {
-	r := &request{
+	req := &request{
 		method:     MethodGet,
 		parameters: map[string]string{},
 		headers:    map[string]string{},
 	}
 
 	if client == nil {
-		r.setErrStr("native client is nil")
+		req.setErrStr("native client is nil")
 	}
 
-	r.client = client
+	req.client = client
 
-	return r
+	return req
 }
 
 func (r *request) Go(ctx context.Context, out interface{}) error {

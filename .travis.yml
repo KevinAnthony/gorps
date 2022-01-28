@@ -3,7 +3,7 @@ go:
   - 1.16.x
 
 env:
-  - LINT_VER=1.43.0
+  - LINT_VER=v1.43.0
 
 git:
   depth: 1
@@ -13,7 +13,8 @@ notifications:
 
 before_install:
   - go get -t -v ./...
-  - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/1.43.0/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.43.0
+  - curl -sfL "https://raw.githubusercontent.com/golangci/golangci-lint/${LINT_VER}/install.sh" |
+    sh -s -- -b "$(go env GOPATH)/bin" "${LINT_VER}"
 
 script:
   - golangci-lint run

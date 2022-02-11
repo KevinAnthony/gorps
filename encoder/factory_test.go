@@ -21,7 +21,7 @@ func TestNewFactory(t *testing.T) {
 	})
 }
 
-func TestFactoryMock_Create(t *testing.T) {
+func TestFactoryMock_CreateFromResponse(t *testing.T) {
 	t.Parallel()
 
 	Convey("CreateFromResponse", t, func() {
@@ -49,6 +49,41 @@ func TestFactoryMock_Create(t *testing.T) {
 				resp.Header.Add("content-type", encoder2.ApplicationXML)
 
 				actual := factory.CreateFromResponse(resp)
+
+				So(actual, ShouldHaveSameTypeAs, encoder2.NewXML())
+			})
+		})
+	})
+}
+
+func TestFactory_CreateFromRequest(t *testing.T) {
+	t.Parallel()
+
+	Convey("CreateFromResponse", t, func() {
+		resp := &http.Request{
+			Header: http.Header{},
+		}
+		factory := encoder2.NewFactory()
+
+		Convey("should return json encoder", func() {
+			Convey("when accept is empty", func() {
+				actual := factory.CreateFromRequest(resp)
+
+				So(actual, ShouldHaveSameTypeAs, encoder2.NewJSON())
+			})
+			Convey("when accept is application/json", func() {
+				resp.Header.Add("accept", encoder2.ApplicationJSON)
+
+				actual := factory.CreateFromRequest(resp)
+
+				So(actual, ShouldHaveSameTypeAs, encoder2.NewJSON())
+			})
+		})
+		Convey("should return xml encoder", func() {
+			Convey("when accept is application/xml", func() {
+				resp.Header.Add("accept", encoder2.ApplicationXML)
+
+				actual := factory.CreateFromRequest(resp)
 
 				So(actual, ShouldHaveSameTypeAs, encoder2.NewXML())
 			})

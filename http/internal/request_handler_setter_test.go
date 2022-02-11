@@ -71,8 +71,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 			})
 			Convey("should return error when", func() {
 				Convey("when body value is not valid", func() {
-					valueOf := reflect.ValueOf(actual).Field(32).Elem()
-					typeOf := reflect.TypeOf(&actual).Elem().Field(32).Type
+					valueOf := reflect.ValueOf(actual).FieldByName("Body").Elem()
 
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewXML(), expected.Body))
 
@@ -83,7 +82,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, factory)
 				})
 				Convey("input type is not valid", func() {
-					valueOf := reflect.ValueOf(actual).Field(32)
+					valueOf := reflect.ValueOf(actual).FieldByName("Body")
 
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewJSON(), expected.Body))
 

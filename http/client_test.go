@@ -14,6 +14,18 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestNewNativeClient(t *testing.T) {
+	t.Parallel()
+
+	Convey("NewNativeClient", t, func() {
+		Convey("should return new client", func() {
+			f := func() { http.NewNativeClient() }
+
+			So(f, ShouldNotPanic)
+		})
+	})
+}
+
 func TestNewClient(t *testing.T) {
 	t.Parallel()
 

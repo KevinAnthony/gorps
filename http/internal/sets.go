@@ -8,6 +8,73 @@ import (
 	"github.com/pkg/errors"
 )
 
+//nolint: funlen, cyclop // this is just a big switch, nothing complex
+func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req *http.Request, str string) error {
+	if len(str) == 0 {
+		return nil
+	}
+
+	switch typeOf.Kind() {
+	case reflect.Bool:
+		return r.setBool(str, value)
+	case reflect.Int:
+		fallthrough
+	case reflect.Int8:
+		fallthrough
+	case reflect.Int16:
+		fallthrough
+	case reflect.Int32:
+		fallthrough
+	case reflect.Int64:
+		return r.setInt(str, value)
+	case reflect.Uint:
+		fallthrough
+	case reflect.Uint8:
+		fallthrough
+	case reflect.Uint16:
+		fallthrough
+	case reflect.Uint32:
+		fallthrough
+	case reflect.Uint64:
+		return r.setUint(str, value)
+	case reflect.Float32:
+		fallthrough
+	case reflect.Float64:
+		return r.setFloat(str, value)
+	case reflect.Array:
+		fallthrough
+	case reflect.Slice:
+		return errors.New("arrays/slices are currently unsupported")
+	case reflect.String:
+		return r.setString(str, value)
+	case reflect.Struct:
+		return r.setStruct(typeOf, value, req, []byte(str))
+	case reflect.Chan:
+		return errors.New("unsupported type: channel")
+	case reflect.Complex128:
+		fallthrough
+	case reflect.Complex64:
+		return errors.New("unsupported type: complex")
+	case reflect.Func:
+		return errors.New("unsupported type: function")
+	case reflect.Map:
+		return errors.New("unsupported type: map")
+	case reflect.Ptr:
+		return errors.New("unsupported type: pointer")
+	case reflect.Uintptr:
+		return errors.New("unsupported type: int pointer")
+	case reflect.UnsafePointer:
+		return errors.New("unsupported type: unsafe pointer")
+	case reflect.Interface:
+		return errors.New("unsupported type: interface")
+	case reflect.Invalid:
+	default:
+		return errors.New("unsupported type: unknown/invalid")
+	}
+
+	return nil
+}
+
 func (r requestHandlerSetter) setStruct(typeOf reflect.Type, value reflect.Value, req *http.Request, bts []byte) error {
 	if !value.IsValid() {
 		return errors.New("bad body value")

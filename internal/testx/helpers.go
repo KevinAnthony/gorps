@@ -19,39 +19,24 @@ func ToReadCloser(enc encoder.Encoder, in interface{}) io.ReadCloser {
 
 func GetTestStruct() TestStruct {
 	return TestStruct{
-		PathString:    "Path",
-		PathStringP:   s2p("Path"),
-		PathInt:       -1,
-		PathIntP:      i2p(-1),
-		PathUInt:      1,
-		PathUIntP:     u2p(1),
-		PathFloat:     .1,
-		PathFloatP:    f2p(.1),
-		PathBool:      true,
-		PathBoolP:     b2p(true),
-		HeaderString:  "header",
-		HeaderStringP: s2p("header"),
-		HeaderInt:     -2,
-		HeaderIntP:    i2p(-2),
-		HeaderUInt:    2,
-		HeaderUIntP:   u2p(2),
-		HeaderFloat:   .2,
-		HeaderFloatP:  f2p(.2),
-		HeaderBool:    false,
-		HeaderBoolP:   b2p(false),
-		HeaderJSON:    getJSONGambit(),
-		QueryString:   "query",
-		QueryStringP:  s2p("query"),
-		QueryInt:      -3,
-		QueryIntP:     i2p(-3),
-		QueryUInt:     3,
-		QueryUIntP:    u2p(3),
-		QueryFloat:    .3,
-		QueryFloatP:   f2p(.3),
-		QueryBool:     true,
-		QueryBoolP:    b2p(true),
-		QueryJSON:     getJSONGambit(),
-		Body:          getJSONGambitPtr(),
+		PathString:   "Path",
+		PathInt:      -1,
+		PathUInt:     1,
+		PathFloat:    .1,
+		PathBool:     true,
+		HeaderString: "header",
+		HeaderInt:    -2,
+		HeaderUInt:   2,
+		HeaderFloat:  .2,
+		HeaderBool:   false,
+		HeaderJSON:   getJSONGambit(),
+		QueryString:  "query",
+		QueryInt:     -3,
+		QueryUInt:    3,
+		QueryFloat:   .3,
+		QueryBool:    true,
+		QueryJSON:    getJSONGambit(),
+		Body:         getJSONGambitPtr(),
 	}
 }
 
@@ -85,40 +70,25 @@ func getJSONGambitPtr() *JSONGambit {
 }
 
 type TestStruct struct {
-	PathString  string   `path:"string"`
-	PathStringP *string  `path:"string"`
-	PathInt     int      `path:"int"`
-	PathIntP    *int     `path:"int"`
-	PathUInt    uint     `path:"uint"`
-	PathUIntP   *uint    `path:"uint"`
-	PathFloat   float64  `path:"float"`
-	PathFloatP  *float64 `path:"float"`
-	PathBool    bool     `path:"bool"`
-	PathBoolP   *bool    `path:"bool"`
+	PathString string  `path:"string"`
+	PathInt    int     `path:"int"`
+	PathUInt   uint    `path:"uint"`
+	PathFloat  float64 `path:"float"`
+	PathBool   bool    `path:"bool"`
 
-	HeaderString  string     `header:"string"`
-	HeaderStringP *string    `header:"string"`
-	HeaderInt     int        `header:"int"`
-	HeaderIntP    *int       `header:"int"`
-	HeaderUInt    uint       `header:"uint"`
-	HeaderUIntP   *uint      `header:"uint"`
-	HeaderFloat   float64    `header:"float"`
-	HeaderFloatP  *float64   `header:"float"`
-	HeaderBool    bool       `header:"bool"`
-	HeaderBoolP   *bool      `header:"bool"`
-	HeaderJSON    JSONGambit `header:"json"`
+	HeaderString string     `header:"string"`
+	HeaderInt    int        `header:"int"`
+	HeaderUInt   uint       `header:"uint"`
+	HeaderFloat  float64    `header:"float"`
+	HeaderBool   bool       `header:"bool"`
+	HeaderJSON   JSONGambit `header:"json"`
 
-	QueryString  string     `query:"string"`
-	QueryStringP *string    `query:"string"`
-	QueryInt     int        `query:"int"`
-	QueryIntP    *int       `query:"int"`
-	QueryUInt    uint       `query:"uint"`
-	QueryUIntP   *uint      `query:"uint"`
-	QueryFloat   float64    `query:"float"`
-	QueryFloatP  *float64   `query:"float"`
-	QueryBool    bool       `query:"bool"`
-	QueryBoolP   *bool      `query:"bool"`
-	QueryJSON    JSONGambit `query:"json"`
+	QueryString string     `query:"string"`
+	QueryInt    int        `query:"int"`
+	QueryUInt   uint       `query:"uint"`
+	QueryFloat  float64    `query:"float"`
+	QueryBool   bool       `query:"bool"`
+	QueryJSON   JSONGambit `query:"json"`
 
 	Body *JSONGambit `body:"request"`
 }

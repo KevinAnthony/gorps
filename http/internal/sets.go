@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -8,73 +9,41 @@ import (
 	"github.com/pkg/errors"
 )
 
-//nolint: funlen, cyclop // this is just a big switch, nothing complex
+//nolint: cyclop // this is just a big switch, nothing complex
 func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req *http.Request, str string) error {
 	if len(str) == 0 {
 		return nil
 	}
 
-	switch typeOf.Kind() {
-	case reflect.Bool:
-		return r.setBool(str, value)
-	case reflect.Int:
-		fallthrough
-	case reflect.Int8:
-		fallthrough
-	case reflect.Int16:
-		fallthrough
-	case reflect.Int32:
-		fallthrough
-	case reflect.Int64:
-		return r.setInt(str, value)
-	case reflect.Uint:
-		fallthrough
-	case reflect.Uint8:
-		fallthrough
-	case reflect.Uint16:
-		fallthrough
-	case reflect.Uint32:
-		fallthrough
-	case reflect.Uint64:
-		return r.setUint(str, value)
-	case reflect.Float32:
-		fallthrough
-	case reflect.Float64:
-		return r.setFloat(str, value)
-	case reflect.Array:
-		fallthrough
-	case reflect.Slice:
-		return errors.New("arrays/slices are currently unsupported")
-	case reflect.String:
-		return r.setString(str, value)
-	case reflect.Struct:
-		return r.setStruct(typeOf, value, req, []byte(str))
-	case reflect.Chan:
-		return errors.New("unsupported type: channel")
-	case reflect.Complex128:
-		fallthrough
-	case reflect.Complex64:
-		return errors.New("unsupported type: complex")
-	case reflect.Func:
-		return errors.New("unsupported type: function")
-	case reflect.Map:
-		return errors.New("unsupported type: map")
-	case reflect.Ptr:
-		return errors.New("unsupported type: pointer")
-	case reflect.Uintptr:
-		return errors.New("unsupported type: int pointer")
-	case reflect.UnsafePointer:
-		return errors.New("unsupported type: unsafe pointer")
-	case reflect.Interface:
-		return errors.New("unsupported type: interface")
-	case reflect.Invalid:
-		fallthrough
+	switch value.Elem().Interface().(type) {
+	case int, int8, int16, int32, int64:
+		return r.setInt(value, str)
+	case string:
+		return r.setString(value, str)
+	case float32, float64:
+		return r.setFloat(value, str)
+	case uint, uint8, uint16, uint32, uint64:
+		return r.setUint(value, str)
+	case bool:
+		return r.setBool(value, str)
 	default:
-		return errors.New("unsupported type: unknown/invalid")
+		//nolint: exhaustive
+		switch value.Kind() {
+		case reflect.Struct, reflect.Map:
+			return r.setStruct(value, typeOf, req, []byte(str))
+		case reflect.Ptr:
+			if value.Type().Elem().Kind() == reflect.Struct {
+				return r.setStruct(value, typeOf, req, []byte(str))
+			}
+		default:
+			return fmt.Errorf("unsupported kind: %s", value.Kind())
+		}
+
+		return fmt.Errorf("unsupported type: %T", value.Interface())
 	}
 }
 
-func (r requestHandlerSetter) setStruct(typeOf reflect.Type, value reflect.Value, req *http.Request, bts []byte) error {
+func (r requestHandlerSetter) setStruct(value reflect.Value, typeOf reflect.Type, req *http.Request, bts []byte) error {
 	if !value.IsValid() {
 		return errors.New("bad body value")
 	}
@@ -96,52 +65,52 @@ func (r requestHandlerSetter) setStruct(typeOf reflect.Type, value reflect.Value
 	return nil
 }
 
-func (r requestHandlerSetter) setBool(str string, value reflect.Value) error {
+func (r requestHandlerSetter) setBool(value reflect.Value, str string) error {
 	b, err := strconv.ParseBool(str)
 	if err != nil {
 		return err
 	}
 
-	value.SetBool(b)
+	value.Elem().SetBool(b)
 
 	return nil
 }
 
-func (r requestHandlerSetter) setInt(str string, value reflect.Value) error {
+func (r requestHandlerSetter) setInt(value reflect.Value, str string) error {
 	i, err := strconv.ParseInt(str, base10, bitSize)
 	if err != nil {
 		return err
 	}
 
-	value.SetInt(i)
+	value.Elem().SetInt(i)
 
 	return nil
 }
 
-func (r requestHandlerSetter) setString(str string, value reflect.Value) error {
-	value.SetString(str)
+func (r requestHandlerSetter) setString(value reflect.Value, str string) error {
+	value.Elem().SetString(str)
 
 	return nil
 }
 
-func (r requestHandlerSetter) setFloat(str string, value reflect.Value) error {
+func (r requestHandlerSetter) setFloat(value reflect.Value, str string) error {
 	i, err := strconv.ParseFloat(str, bitSize)
 	if err != nil {
 		return err
 	}
 
-	value.SetFloat(i)
+	value.Elem().SetFloat(i)
 
 	return nil
 }
 
-func (r requestHandlerSetter) setUint(str string, value reflect.Value) error {
+func (r requestHandlerSetter) setUint(value reflect.Value, str string) error {
 	i, err := strconv.ParseUint(str, base10, bitSize)
 	if err != nil {
 		return err
 	}
 
-	value.SetUint(i)
+	value.Elem().SetUint(i)
 
 	return nil
 }

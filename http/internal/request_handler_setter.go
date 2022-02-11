@@ -42,7 +42,7 @@ func (r requestHandlerSetter) Body(value reflect.Value, typeOf reflect.Type, req
 		return err
 	}
 
-	return r.setStruct(typeOf, value, req, bts)
+	return r.setStruct(value, typeOf, req, bts)
 }
 
 func (r requestHandlerSetter) Header(value reflect.Value, typeOf reflect.Type, req *http.Request, header string) error {

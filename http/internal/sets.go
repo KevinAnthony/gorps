@@ -68,11 +68,10 @@ func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req 
 	case reflect.Interface:
 		return errors.New("unsupported type: interface")
 	case reflect.Invalid:
+		fallthrough
 	default:
 		return errors.New("unsupported type: unknown/invalid")
 	}
-
-	return nil
 }
 
 func (r requestHandlerSetter) setStruct(typeOf reflect.Type, value reflect.Value, req *http.Request, bts []byte) error {

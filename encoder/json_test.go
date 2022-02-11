@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kevinanthony/gorps/http/encoder"
+	"github.com/kevinanthony/gorps/encoder"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

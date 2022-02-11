@@ -7,9 +7,9 @@ import (
 	native "net/http"
 	"testing"
 
-	"github.com/kevinanthony/gorps/http"
-	"github.com/kevinanthony/gorps/http/encoder"
+	"github.com/kevinanthony/gorps/encoder"
 
+	"github.com/kevinanthony/gorps/http"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -79,7 +79,7 @@ func TestClient_Do(t *testing.T) {
 					resp := newResponse(native.StatusOK, actual)
 					doCall.Return(resp, nil)
 
-					factoryMock.On("Create", resp).Return(encoderMock).Once()
+					factoryMock.On("CreateFromResponse", resp).Return(encoderMock).Once()
 					encoderMock.On("Decode", mock.Anything, mock.Anything).
 						Once().
 						Return(nil).Run(func(args mock.Arguments) {
@@ -108,7 +108,7 @@ func TestClient_Do(t *testing.T) {
 
 				err := client.Do(req, &blank)
 
-				So(err, ShouldBeError, "418: you are a teapot: bad request")
+				So(err, ShouldBeError, "418: you are a teapot: bad requestBroker")
 				mock.AssertExpectationsForObjects(t, mocks...)
 			})
 			Convey("read body returns an error", func() {
@@ -128,7 +128,7 @@ func TestClient_Do(t *testing.T) {
 				resp := newResponse(native.StatusOK, "junk")
 				doCall.Return(resp, nil)
 
-				factoryMock.On("Create", resp).Return(encoderMock).Once()
+				factoryMock.On("CreateFromResponse", resp).Return(encoderMock).Once()
 				encoderMock.On("Decode", mock.Anything, mock.Anything).Return(errors.New("error decoding"))
 
 				err := client.Do(req, &blank)

@@ -5,13 +5,13 @@ import (
 	native "net/http"
 	"strings"
 
-	"github.com/kevinanthony/gorps/http/encoder"
+	"github.com/kevinanthony/gorps/encoder"
 
 	"github.com/pkg/errors"
 )
 
 var (
-	errBadRequest = errors.New("bad request")
+	errBadRequest = errors.New("bad requestBroker")
 )
 
 type Client interface {
@@ -72,5 +72,5 @@ func (c client) Do(req *native.Request, dst interface{}) error {
 		return nil
 	}
 
-	return c.encFactory.Create(resp).Decode(bts, dst)
+	return c.encFactory.CreateFromResponse(resp).Decode(bts, dst)
 }

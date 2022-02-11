@@ -26,3 +26,4 @@ coverage:
   ignore:          # files and folders that will be removed during processing
     - "**/*_mock.go"
     - "**/*_test.go"
+    - "internal/testx/*" #test helper functions

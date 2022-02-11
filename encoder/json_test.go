@@ -21,7 +21,7 @@ func TestNewJSON(t *testing.T) {
 	})
 }
 
-func TestJSON_Encode(t *testing.T) {
+func TestJSONEncoder_Encode(t *testing.T) {
 	t.Parallel()
 
 	Convey("Encode", t, func() {
@@ -44,7 +44,7 @@ func TestJSON_Encode(t *testing.T) {
 	})
 }
 
-func TestJSON_Decode(t *testing.T) {
+func TestJSONEncoder_Decode(t *testing.T) {
 	t.Parallel()
 
 	Convey("Decode", t, func() {
@@ -70,6 +70,16 @@ func TestJSON_Decode(t *testing.T) {
 				So(err, ShouldBeError, "ReadVal: can only unmarshal into pointer, error found in #0 byte of ...||..., bigger context ...||...")
 			})
 		})
+	})
+}
+
+func TestJsonEncoder_GetMime(t *testing.T) {
+	t.Parallel()
+
+	Convey("GetMime", t, func() {
+		enc := encoder.NewJSON()
+
+		So(enc.GetMime(), ShouldEqual, "application/json")
 	})
 }
 

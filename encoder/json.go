@@ -21,3 +21,7 @@ func (j jsonEncoder) Encode(data interface{}) ([]byte, error) {
 func (j jsonEncoder) Decode(data []byte, dst interface{}) error {
 	return j.jit.Unmarshal(data, dst)
 }
+
+func (j jsonEncoder) GetMime() string {
+	return ApplicationJSON
+}

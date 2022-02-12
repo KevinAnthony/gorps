@@ -13,7 +13,7 @@ func TestNewRequest(t *testing.T) {
 		//	Convey("should return type jsonEncoding", func() {
 		//		actual := http.NewRequest(http.MethodPost, "google.com", "search")
 		//
-		//		So(reflect.TypeOf(actual).String(), ShouldEqual, "*http.request")
+		//		So(reflect.TypeOf(actual).String(), ShouldEqual, "*http.requestBroker")
 		//	})
 	})
 }

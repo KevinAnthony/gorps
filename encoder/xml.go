@@ -16,3 +16,7 @@ func (x xmlEncoder) Encode(data interface{}) ([]byte, error) {
 func (x xmlEncoder) Decode(data []byte, dst interface{}) error {
 	return xml.Unmarshal(data, dst)
 }
+
+func (x xmlEncoder) GetMime() string {
+	return ApplicationXML
+}

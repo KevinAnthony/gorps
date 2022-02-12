@@ -9,8 +9,9 @@ type (
 )
 
 const (
-	MethodPost   = http.MethodPost
-	MethodGet    = http.MethodGet
-	MethodPut    = http.MethodPut
-	MethodDelete = http.MethodDelete
+	MethodPost    = http.MethodPost
+	MethodGet     = http.MethodGet
+	MethodPut     = http.MethodPut
+	MethodDelete  = http.MethodDelete
+	MethodOptions = http.MethodOptions
 )

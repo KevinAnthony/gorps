@@ -16,10 +16,10 @@ const (
 )
 
 type RequestHandlerSetter interface {
-	Body(reflect.Value, reflect.Type, *http.Request) error
-	Header(reflect.Value, reflect.Type, *http.Request, string) error
-	Path(reflect.Value, reflect.Type, *http.Request, string) error
-	Query(reflect.Value, reflect.Type, *http.Request, string) error
+	Body(reflect.Value, *http.Request) error
+	Header(reflect.Value, *http.Request, string) error
+	Path(reflect.Value, *http.Request, string) error
+	Query(reflect.Value, *http.Request, string) error
 }
 
 type requestHandlerSetter struct {
@@ -36,7 +36,7 @@ func NewRequestHandlerSetter(factory encoder.Factory) RequestHandlerSetter {
 	}
 }
 
-func (r requestHandlerSetter) Body(value reflect.Value, typeOf reflect.Type, req *http.Request) error {
+func (r requestHandlerSetter) Body(value reflect.Value, req *http.Request) error {
 	bts, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return err
@@ -45,13 +45,13 @@ func (r requestHandlerSetter) Body(value reflect.Value, typeOf reflect.Type, req
 	return r.setStruct(value, r.factory.CreateFromRequest(req), bts)
 }
 
-func (r requestHandlerSetter) Header(value reflect.Value, typeOf reflect.Type, req *http.Request, header string) error {
+func (r requestHandlerSetter) Header(value reflect.Value, req *http.Request, header string) error {
 	headerStr := req.Header.Get(header)
 
 	return r.set(value, headerStr)
 }
 
-func (r requestHandlerSetter) Path(value reflect.Value, typeOf reflect.Type,
+func (r requestHandlerSetter) Path(value reflect.Value,
 	req *http.Request, pathParam string) error {
 	val, ok := req.Context().Value(chi.RouteCtxKey).(*chi.Context)
 	if !ok {
@@ -67,7 +67,7 @@ func (r requestHandlerSetter) Path(value reflect.Value, typeOf reflect.Type,
 	return nil
 }
 
-func (r requestHandlerSetter) Query(value reflect.Value, typeOf reflect.Type, req *http.Request, query string) error {
+func (r requestHandlerSetter) Query(value reflect.Value, req *http.Request, query string) error {
 	queryStr := req.URL.Query().Get(query)
 
 	return r.set(value, queryStr)

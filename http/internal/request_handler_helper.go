@@ -29,19 +29,19 @@ func (h requestHandlerHelper) Fill(r *http.Request, dst interface{}) error {
 
 		var err error
 		if tag, found := typeOf.Tag.Lookup("header"); found {
-			err = h.setter.Header(value, typeOf.Type, r, tag)
+			err = h.setter.Header(value, r, tag)
 		}
 
 		if tag, found := typeOf.Tag.Lookup("query"); found {
-			err = h.setter.Query(value, typeOf.Type, r, tag)
+			err = h.setter.Query(value, r, tag)
 		}
 
 		if tag, found := typeOf.Tag.Lookup("path"); found {
-			err = h.setter.Path(value, typeOf.Type, r, tag)
+			err = h.setter.Path(value, r, tag)
 		}
 
 		if _, found := typeOf.Tag.Lookup("body"); found {
-			err = h.setter.Body(value, typeOf.Type, r)
+			err = h.setter.Body(value, r)
 		}
 
 		if err != nil {

@@ -14,21 +14,21 @@ type RequestHandlerSetterMock struct {
 }
 
 func (r *RequestHandlerSetterMock) Body(
-	value reflect.Value, field reflect.Type, request *http.Request) error {
-	return r.Called(value, field, request).Error(0)
+	value reflect.Value, request *http.Request) error {
+	return r.Called(value, request).Error(0)
 }
 
 func (r *RequestHandlerSetterMock) Header(
-	value reflect.Value, field reflect.Type, request *http.Request, str string) error {
-	return r.Called(value, field, request, str).Error(0)
+	value reflect.Value, request *http.Request, str string) error {
+	return r.Called(value, request, str).Error(0)
 }
 
 func (r *RequestHandlerSetterMock) Path(
-	value reflect.Value, field reflect.Type, request *http.Request, str string) error {
-	return r.Called(value, field, request, str).Error(0)
+	value reflect.Value, request *http.Request, str string) error {
+	return r.Called(value, request, str).Error(0)
 }
 
 func (r *RequestHandlerSetterMock) Query(
-	value reflect.Value, field reflect.Type, request *http.Request, str string) error {
-	return r.Called(value, field, request, str).Error(0)
+	value reflect.Value, request *http.Request, str string) error {
+	return r.Called(value, request, str).Error(0)
 }

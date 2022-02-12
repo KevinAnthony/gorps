@@ -49,14 +49,14 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 			expected := testx.GetTestStruct()
 			actual := testx.TestStruct{}
 
-			valueOf, typeOf := getFields(&actual, "Body")
+			valueOf := getFields(&actual, "Body")
 
 			Convey("should set structure", func() {
 				Convey("request is json", func() {
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewJSON(), expected.Body))
 					factory.On("CreateFromRequest", req).Return(encoder.NewJSON()).Once()
 
-					err := setter.Body(valueOf, typeOf, req)
+					err := setter.Body(valueOf, req)
 
 					So(err, ShouldBeNil)
 					So(actual.Body, ShouldResemble, expected.Body)
@@ -66,7 +66,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewXML(), expected.Body))
 					factory.On("CreateFromRequest", req).Return(encoder.NewXML()).Once()
 
-					err := setter.Body(valueOf, typeOf, req)
+					err := setter.Body(valueOf, req)
 
 					So(err, ShouldBeNil)
 					So(actual.Body, ShouldResemble, expected.Body)
@@ -79,7 +79,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 
 					req := httptest.NewRequest(http.MethodGet, "/", reader)
 
-					err := setter.Body(valueOf, typeOf, req)
+					err := setter.Body(valueOf, req)
 
 					So(err, ShouldBeError, "everybody body mock")
 					So(actual.Body, ShouldBeNil)
@@ -91,7 +91,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewXML(), expected.Body))
 					factory.On("CreateFromRequest", req).Return(encoder.NewXML()).Once()
 
-					err := setter.Body(valueOf, typeOf, req)
+					err := setter.Body(valueOf, req)
 
 					So(err, ShouldBeError, "bad body value")
 					So(actual.Body, ShouldBeNil)
@@ -103,7 +103,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewJSON(), expected.Body))
 					factory.On("CreateFromRequest", req).Return(encoder.NewJSON()).Once()
 
-					err := setter.Body(valueOf, typeOf, req)
+					err := setter.Body(valueOf, req)
 
 					So(err, ShouldBeError, "cannot set value to type")
 					So(actual.Body, ShouldBeNil)
@@ -113,7 +113,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					req := httptest.NewRequest(http.MethodGet, "/", ioutil.NopCloser(strings.NewReader("{")))
 					factory.On("CreateFromRequest", req).Return(encoder.NewJSON()).Once()
 
-					err := setter.Body(valueOf, typeOf, req)
+					err := setter.Body(valueOf, req)
 
 					So(err, ShouldBeError)
 					So(err.Error(), ShouldStartWith, "decode application/json: testx.JSONGambit")
@@ -153,9 +153,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 		Convey("for type", func() {
 			Convey("string", func() {
 				Convey("when header is string", func() {
-					valueOf, typeOf := getFields(&actual, "HeaderString")
+					valueOf := getFields(&actual, "HeaderString")
 
-					err := setter.Header(valueOf, typeOf, req, "string")
+					err := setter.Header(valueOf, req, "string")
 
 					So(err, ShouldBeNil)
 					So(actual.HeaderString, ShouldResemble, expected.HeaderString)
@@ -164,9 +164,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 			})
 			Convey("int", func() {
 				Convey("when header is int", func() {
-					valueOf, typeOf := getFields(&actual, "HeaderInt")
+					valueOf := getFields(&actual, "HeaderInt")
 
-					err := setter.Header(valueOf, typeOf, req, "int")
+					err := setter.Header(valueOf, req, "int")
 
 					So(err, ShouldBeNil)
 					So(actual.HeaderInt, ShouldResemble, expected.HeaderInt)
@@ -174,9 +174,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 				})
 				Convey("when header not a valid number", func() {
 					req.Header.Set("int", "NaN")
-					valueOf, typeOf := getFields(&actual, "HeaderInt")
+					valueOf := getFields(&actual, "HeaderInt")
 
-					err := setter.Header(valueOf, typeOf, req, "int")
+					err := setter.Header(valueOf, req, "int")
 
 					So(err, ShouldBeError, "strconv.ParseInt: parsing \"NaN\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -184,9 +184,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 			})
 			Convey("uint", func() {
 				Convey("when header is int", func() {
-					valueOf, typeOf := getFields(&actual, "HeaderUInt")
+					valueOf := getFields(&actual, "HeaderUInt")
 
-					err := setter.Header(valueOf, typeOf, req, "uint")
+					err := setter.Header(valueOf, req, "uint")
 
 					So(err, ShouldBeNil)
 					So(actual.HeaderUInt, ShouldResemble, expected.HeaderUInt)
@@ -194,9 +194,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 				})
 				Convey("when header is not a valid number", func() {
 					req.Header.Set("uint", "NaN")
-					valueOf, typeOf := getFields(&actual, "HeaderUInt")
+					valueOf := getFields(&actual, "HeaderUInt")
 
-					err := setter.Header(valueOf, typeOf, req, "uint")
+					err := setter.Header(valueOf, req, "uint")
 
 					So(err, ShouldBeError, "strconv.ParseUint: parsing \"NaN\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -204,9 +204,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 			})
 			Convey("float", func() {
 				Convey("when header is float", func() {
-					valueOf, typeOf := getFields(&actual, "HeaderFloat")
+					valueOf := getFields(&actual, "HeaderFloat")
 
-					err := setter.Header(valueOf, typeOf, req, "float")
+					err := setter.Header(valueOf, req, "float")
 
 					So(err, ShouldBeNil)
 					So(actual.HeaderFloat, ShouldResemble, expected.HeaderFloat)
@@ -214,9 +214,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 				})
 				Convey("when header is NaN", func() {
 					req.Header.Set("float", "NaN")
-					valueOf, typeOf := getFields(&actual, "HeaderFloat")
+					valueOf := getFields(&actual, "HeaderFloat")
 
-					err := setter.Header(valueOf, typeOf, req, "float")
+					err := setter.Header(valueOf, req, "float")
 
 					So(err, ShouldBeNil)
 					So(math.IsNaN(actual.HeaderFloat), ShouldBeTrue)
@@ -224,9 +224,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 				})
 				Convey("when header is not a valid number", func() {
 					req.Header.Set("float", "not a float")
-					valueOf, typeOf := getFields(&actual, "HeaderFloat")
+					valueOf := getFields(&actual, "HeaderFloat")
 
-					err := setter.Header(valueOf, typeOf, req, "float")
+					err := setter.Header(valueOf, req, "float")
 
 					So(err, ShouldBeError, "strconv.ParseFloat: parsing \"not a float\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -234,9 +234,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 			})
 			Convey("bool", func() {
 				Convey("when header is bool", func() {
-					valueOf, typeOf := getFields(&actual, "HeaderBool")
+					valueOf := getFields(&actual, "HeaderBool")
 
-					err := setter.Header(valueOf, typeOf, req, "bool")
+					err := setter.Header(valueOf, req, "bool")
 
 					So(err, ShouldBeNil)
 					So(actual.HeaderBool, ShouldResemble, expected.HeaderBool)
@@ -244,9 +244,9 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 				})
 				Convey("when header is not a bool", func() {
 					req.Header.Set("bool", "maybe")
-					valueOf, typeOf := getFields(&actual, "HeaderBool")
+					valueOf := getFields(&actual, "HeaderBool")
 
-					err := setter.Header(valueOf, typeOf, req, "bool")
+					err := setter.Header(valueOf, req, "bool")
 
 					So(err, ShouldBeError, "strconv.ParseBool: parsing \"maybe\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -291,9 +291,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 		Convey("for type", func() {
 			Convey("string", func() {
 				Convey("when Query is string", func() {
-					valueOf, typeOf := getFields(&actual, "QueryString")
+					valueOf := getFields(&actual, "QueryString")
 
-					err := setter.Query(valueOf, typeOf, req, "string")
+					err := setter.Query(valueOf, req, "string")
 
 					So(err, ShouldBeNil)
 					So(actual.QueryString, ShouldResemble, expected.QueryString)
@@ -302,9 +302,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 			})
 			Convey("int", func() {
 				Convey("when Query is int", func() {
-					valueOf, typeOf := getFields(&actual, "QueryInt")
+					valueOf := getFields(&actual, "QueryInt")
 
-					err := setter.Query(valueOf, typeOf, req, "int")
+					err := setter.Query(valueOf, req, "int")
 
 					So(err, ShouldBeNil)
 					So(actual.QueryInt, ShouldResemble, expected.QueryInt)
@@ -314,9 +314,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 					q.Set("int", "NaN")
 					req.URL.RawQuery = q.Encode()
 
-					valueOf, typeOf := getFields(&actual, "QueryInt")
+					valueOf := getFields(&actual, "QueryInt")
 
-					err := setter.Query(valueOf, typeOf, req, "int")
+					err := setter.Query(valueOf, req, "int")
 
 					So(err, ShouldBeError, "strconv.ParseInt: parsing \"NaN\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -324,9 +324,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 			})
 			Convey("uint", func() {
 				Convey("when Query is int", func() {
-					valueOf, typeOf := getFields(&actual, "QueryUInt")
+					valueOf := getFields(&actual, "QueryUInt")
 
-					err := setter.Query(valueOf, typeOf, req, "uint")
+					err := setter.Query(valueOf, req, "uint")
 
 					So(err, ShouldBeNil)
 					So(actual.QueryUInt, ShouldResemble, expected.QueryUInt)
@@ -336,9 +336,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 					q.Set("uint", "NaN")
 					req.URL.RawQuery = q.Encode()
 
-					valueOf, typeOf := getFields(&actual, "QueryUInt")
+					valueOf := getFields(&actual, "QueryUInt")
 
-					err := setter.Query(valueOf, typeOf, req, "uint")
+					err := setter.Query(valueOf, req, "uint")
 
 					So(err, ShouldBeError, "strconv.ParseUint: parsing \"NaN\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -346,9 +346,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 			})
 			Convey("float", func() {
 				Convey("when Query is float", func() {
-					valueOf, typeOf := getFields(&actual, "QueryFloat")
+					valueOf := getFields(&actual, "QueryFloat")
 
-					err := setter.Query(valueOf, typeOf, req, "float")
+					err := setter.Query(valueOf, req, "float")
 
 					So(err, ShouldBeNil)
 					So(actual.QueryFloat, ShouldResemble, expected.QueryFloat)
@@ -358,9 +358,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 					q.Set("float", "NaN")
 					req.URL.RawQuery = q.Encode()
 
-					valueOf, typeOf := getFields(&actual, "QueryFloat")
+					valueOf := getFields(&actual, "QueryFloat")
 
-					err := setter.Query(valueOf, typeOf, req, "float")
+					err := setter.Query(valueOf, req, "float")
 
 					So(err, ShouldBeNil)
 					So(math.IsNaN(actual.QueryFloat), ShouldBeTrue)
@@ -370,9 +370,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 					q.Set("float", "not a float")
 					req.URL.RawQuery = q.Encode()
 
-					valueOf, typeOf := getFields(&actual, "QueryFloat")
+					valueOf := getFields(&actual, "QueryFloat")
 
-					err := setter.Query(valueOf, typeOf, req, "float")
+					err := setter.Query(valueOf, req, "float")
 
 					So(err, ShouldBeError, "strconv.ParseFloat: parsing \"not a float\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -380,9 +380,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 			})
 			Convey("bool", func() {
 				Convey("when Query is bool", func() {
-					valueOf, typeOf := getFields(&actual, "QueryBool")
+					valueOf := getFields(&actual, "QueryBool")
 
-					err := setter.Query(valueOf, typeOf, req, "bool")
+					err := setter.Query(valueOf, req, "bool")
 
 					So(err, ShouldBeNil)
 					So(actual.QueryBool, ShouldResemble, expected.QueryBool)
@@ -392,9 +392,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 					q.Set("bool", "maybe")
 					req.URL.RawQuery = q.Encode()
 
-					valueOf, typeOf := getFields(&actual, "QueryBool")
+					valueOf := getFields(&actual, "QueryBool")
 
-					err := setter.Query(valueOf, typeOf, req, "bool")
+					err := setter.Query(valueOf, req, "bool")
 
 					So(err, ShouldBeError, "strconv.ParseBool: parsing \"maybe\": invalid syntax")
 					mock.AssertExpectationsForObjects(t, bag...)
@@ -404,9 +404,9 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 		})
 		Convey("structure", func() {
 			Convey("when query is encoded structure", func() {
-				valueOf, typeOf := getFields(&actual, "QueryJSON")
+				valueOf := getFields(&actual, "QueryJSON")
 
-				err := setter.Query(valueOf, typeOf, req, "json")
+				err := setter.Query(valueOf, req, "json")
 
 				So(err, ShouldBeNil)
 				So(actual.QueryJSON, ShouldResemble, expected.QueryJSON)
@@ -416,8 +416,8 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 	})
 }
 
-func getFields(t *testx.TestStruct, name string) (reflect.Value, reflect.Type) {
+func getFields(t *testx.TestStruct, name string) reflect.Value {
 	valueOf := reflect.ValueOf(t).Elem().FieldByName(name).Addr()
 
-	return valueOf, valueOf.Elem().Type()
+	return valueOf
 }

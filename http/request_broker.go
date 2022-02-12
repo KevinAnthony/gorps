@@ -10,22 +10,22 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Request interface {
+type RequestBroker interface {
 	Go(ctx context.Context, v interface{}) error
 
-	Post() Request
-	Get() Request
-	Put() Request
-	Delete() Request
+	Post() RequestBroker
+	Get() RequestBroker
+	Put() RequestBroker
+	Delete() RequestBroker
 
-	Domain(string) Request
-	Path(string) Request
-	Parameter(string, string) Request
+	Domain(string) RequestBroker
+	Path(string) RequestBroker
+	Parameter(string, string) RequestBroker
 
-	Header(string, string) Request
+	Header(string, string) RequestBroker
 }
 
-type request struct {
+type requestBroker struct {
 	err    error
 	client Client
 	domain string
@@ -36,71 +36,71 @@ type request struct {
 	headers    map[string]string
 }
 
-func (r *request) Post() Request {
+func (r *requestBroker) Post() RequestBroker {
 	r.method = MethodPost
 
 	return r
 }
 
-func (r *request) Get() Request {
+func (r *requestBroker) Get() RequestBroker {
 	r.method = MethodGet
 
 	return r
 }
 
-func (r *request) Put() Request {
+func (r *requestBroker) Put() RequestBroker {
 	r.method = MethodPut
 
 	return r
 }
 
-func (r *request) Delete() Request {
+func (r *requestBroker) Delete() RequestBroker {
 	r.method = MethodDelete
 
 	return r
 }
 
-func (r *request) Domain(s string) Request {
+func (r *requestBroker) Domain(s string) RequestBroker {
 	r.domain = s
 
 	return r
 }
 
-func (r *request) Path(s string) Request {
+func (r *requestBroker) Path(s string) RequestBroker {
 	r.path = s
 
 	return r
 }
 
-func (r *request) Parameter(pattern, value string) Request {
+func (r *requestBroker) Parameter(pattern, value string) RequestBroker {
 	r.parameters[pattern] = value
 
 	return r
 }
 
-func (r *request) Header(header, value string) Request {
+func (r *requestBroker) Header(header, value string) RequestBroker {
 	r.headers[header] = value
 
 	return r
 }
 
-func NewRequest(client Client) Request {
-	req := &request{
+func NewRequest(client Client) RequestBroker {
+	r := &requestBroker{
 		method:     MethodGet,
 		parameters: map[string]string{},
 		headers:    map[string]string{},
 	}
 
 	if client == nil {
-		req.setErrStr("native client is nil")
+		r.setErrStr("native client is nil")
 	}
 
-	req.client = client
+	r.client = client
 
-	return req
+	return r
 }
 
-func (r *request) Go(ctx context.Context, out interface{}) error {
+func (r *requestBroker) Go(ctx context.Context, out interface{}) error {
 	if r.err != nil {
 		return r.err
 	}
@@ -134,7 +134,7 @@ func (r *request) Go(ctx context.Context, out interface{}) error {
 	return r.client.Do(req, out)
 }
 
-func (r *request) setErrStr(s string) {
+func (r *requestBroker) setErrStr(s string) {
 	if r.err != nil {
 		r.err = errors.New(s)
 	}

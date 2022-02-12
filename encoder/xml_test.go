@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kevinanthony/gorps/http/encoder"
+	"github.com/kevinanthony/gorps/encoder"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -21,7 +21,7 @@ func TestNewXML(t *testing.T) {
 	})
 }
 
-func TestXML_Encode(t *testing.T) {
+func TestXmlEncoder_Encode(t *testing.T) {
 	t.Parallel()
 
 	Convey("Encode", t, func() {
@@ -44,7 +44,7 @@ func TestXML_Encode(t *testing.T) {
 	})
 }
 
-func TestXML_Decode(t *testing.T) {
+func TestXmlEncoder_Decode(t *testing.T) {
 	t.Parallel()
 
 	Convey("Decode", t, func() {
@@ -72,6 +72,16 @@ func TestXML_Decode(t *testing.T) {
 				So(err, ShouldBeError, "non-pointer passed to Unmarshal")
 			})
 		})
+	})
+}
+
+func TestXmlEncoder_GetMime(t *testing.T) {
+	t.Parallel()
+
+	Convey("GetMime", t, func() {
+		enc := encoder.NewXML()
+
+		So(enc.GetMime(), ShouldEqual, "application/xml")
 	})
 }
 

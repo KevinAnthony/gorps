@@ -10,6 +10,10 @@ type Mock struct {
 	mock.Mock
 }
 
+func (e *Mock) GetMime() string {
+	return e.Called().String(0)
+}
+
 func (e *Mock) Encode(data interface{}) ([]byte, error) {
 	args := e.Called(data)
 

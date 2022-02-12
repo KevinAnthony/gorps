@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/kevinanthony/gorps/encoder"
+
 	"github.com/pkg/errors"
 )
 
@@ -30,10 +32,10 @@ func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req 
 		//nolint: exhaustive
 		switch value.Kind() {
 		case reflect.Struct, reflect.Map:
-			return r.setStruct(value, typeOf, req, []byte(str))
+			return r.setStruct(value, typeOf, encoder.NewJSON(), []byte(str))
 		case reflect.Ptr:
 			if value.Type().Elem().Kind() == reflect.Struct {
-				return r.setStruct(value, typeOf, req, []byte(str))
+				return r.setStruct(value, value.Type(), encoder.NewJSON(), []byte(str))
 			}
 		default:
 			return fmt.Errorf("unsupported kind: %s", value.Kind())
@@ -43,7 +45,7 @@ func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req 
 	}
 }
 
-func (r requestHandlerSetter) setStruct(value reflect.Value, typeOf reflect.Type, req *http.Request, bts []byte) error {
+func (r requestHandlerSetter) setStruct(value reflect.Value, typeOf reflect.Type, enc encoder.Encoder, bts []byte) error {
 	if !value.IsValid() {
 		return errors.New("bad body value")
 	}
@@ -52,15 +54,27 @@ func (r requestHandlerSetter) setStruct(value reflect.Value, typeOf reflect.Type
 		return errors.New("cannot set value to type")
 	}
 
-	dst := reflect.New(typeOf.Elem()).Interface()
-	enc := r.factory.CreateFromRequest(req)
+	isPtr := value.Elem().Type().Kind() == reflect.Ptr
+
+	typeOf = value.Elem().Type()
+	if isPtr {
+		typeOf = value.Elem().Type().Elem()
+	}
+
+	dst := reflect.New(typeOf).Interface()
 
 	if err := enc.Decode(bts, &dst); err != nil {
 		return errors.Wrapf(err, "decode %s", enc.GetMime())
 	}
 
-	v := reflect.ValueOf(dst)
-	value.Elem().Set(v)
+	dstValue := reflect.ValueOf(dst)
+	if isPtr {
+		value.Elem().Set(dstValue)
+
+		return nil
+	}
+
+	value.Elem().Set(dstValue.Elem())
 
 	return nil
 }

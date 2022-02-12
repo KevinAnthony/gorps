@@ -89,6 +89,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					valueOf := reflect.ValueOf(actual).FieldByName("Body").Elem()
 
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewXML(), expected.Body))
+					factory.On("CreateFromRequest", req).Return(encoder.NewXML()).Once()
 
 					err := setter.Body(valueOf, typeOf, req)
 
@@ -100,6 +101,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					valueOf := reflect.ValueOf(actual).FieldByName("Body")
 
 					req := httptest.NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewJSON(), expected.Body))
+					factory.On("CreateFromRequest", req).Return(encoder.NewJSON()).Once()
 
 					err := setter.Body(valueOf, typeOf, req)
 

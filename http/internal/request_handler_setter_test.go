@@ -1,6 +1,7 @@
 package internal_test
 
 import (
+	"context"
 	"errors"
 	"io/ioutil"
 	"math"
@@ -15,6 +16,7 @@ import (
 	"github.com/kevinanthony/gorps/http/internal"
 	"github.com/kevinanthony/gorps/internal/testx"
 
+	"github.com/go-chi/chi"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -259,6 +261,185 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 
 func TestRequestHandlerSetter_Path(t *testing.T) {
 	t.Parallel()
+
+	Convey("Path", t, func() {
+		factory := &encoder.FactoryMock{}
+
+		bag := []interface{}{factory}
+
+		setter := internal.NewRequestHandlerSetter(factory)
+
+		expected := testx.GetTestStruct()
+		actual := testx.TestStruct{}
+
+		cctx := &chi.Context{
+			URLParams: chi.RouteParams{
+				Keys: []string{
+					"string",
+					"int",
+					"uint",
+					"float",
+					"bool",
+				},
+				Values: []string{
+					expected.PathString,
+					"-1",
+					"1",
+					".1",
+					"true",
+				},
+			},
+		}
+
+		req := httptest.
+			NewRequest(http.MethodGet, "/", nil).
+			WithContext(context.WithValue(context.Background(), chi.RouteCtxKey, cctx))
+
+		Convey("for type", func() {
+			Convey("string", func() {
+				Convey("when header is string", func() {
+					valueOf := getFields(&actual, "PathString")
+
+					err := setter.Path(valueOf, req, "string")
+
+					So(err, ShouldBeNil)
+					So(actual.PathString, ShouldResemble, expected.PathString)
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+			})
+			Convey("int", func() {
+				Convey("when header is int", func() {
+					valueOf := getFields(&actual, "PathInt")
+
+					err := setter.Path(valueOf, req, "int")
+
+					So(err, ShouldBeNil)
+					So(actual.PathInt, ShouldResemble, expected.PathInt)
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+				Convey("when header not a valid number", func() {
+					cctx.URLParams.Values[1] = "NaN"
+					req := httptest.
+						NewRequest(http.MethodGet, "/", nil).
+						WithContext(context.WithValue(context.Background(), chi.RouteCtxKey, cctx))
+					valueOf := getFields(&actual, "PathInt")
+
+					err := setter.Path(valueOf, req, "int")
+
+					So(err, ShouldBeError, "strconv.ParseInt: parsing \"NaN\": invalid syntax")
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+			})
+			Convey("uint", func() {
+				Convey("when header is int", func() {
+					valueOf := getFields(&actual, "PathUInt")
+
+					err := setter.Path(valueOf, req, "uint")
+
+					So(err, ShouldBeNil)
+					So(actual.PathUInt, ShouldResemble, expected.PathUInt)
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+				Convey("when header is not a valid number", func() {
+					cctx.URLParams.Values[2] = "NaN"
+					valueOf := getFields(&actual, "PathUInt")
+
+					err := setter.Path(valueOf, req, "uint")
+
+					So(err, ShouldBeError, "strconv.ParseUint: parsing \"NaN\": invalid syntax")
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+			})
+			Convey("float", func() {
+				Convey("when header is float", func() {
+					valueOf := getFields(&actual, "PathFloat")
+
+					err := setter.Path(valueOf, req, "float")
+
+					So(err, ShouldBeNil)
+					So(actual.PathFloat, ShouldResemble, expected.PathFloat)
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+				Convey("when header is NaN", func() {
+					cctx.URLParams.Values[3] = "NaN"
+					valueOf := getFields(&actual, "PathFloat")
+
+					err := setter.Path(valueOf, req, "float")
+
+					So(err, ShouldBeNil)
+					So(math.IsNaN(actual.PathFloat), ShouldBeTrue)
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+				Convey("when header is not a valid number", func() {
+					cctx.URLParams.Values[3] = "not a float"
+					valueOf := getFields(&actual, "PathFloat")
+
+					err := setter.Path(valueOf, req, "float")
+
+					So(err, ShouldBeError, "strconv.ParseFloat: parsing \"not a float\": invalid syntax")
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+			})
+			Convey("bool", func() {
+				Convey("when header is bool", func() {
+					valueOf := getFields(&actual, "PathBool")
+
+					err := setter.Path(valueOf, req, "bool")
+
+					So(err, ShouldBeNil)
+					So(actual.PathBool, ShouldResemble, expected.PathBool)
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+				Convey("when header is not a bool", func() {
+					cctx.URLParams.Values[4] = "maybe"
+					valueOf := getFields(&actual, "PathBool")
+
+					err := setter.Path(valueOf, req, "bool")
+
+					So(err, ShouldBeError, "strconv.ParseBool: parsing \"maybe\": invalid syntax")
+					mock.AssertExpectationsForObjects(t, bag...)
+				})
+			})
+			mock.AssertExpectationsForObjects(t, bag...)
+		})
+		Convey("should return nil when", func() {
+			Convey("context is not set", func() {
+				req := httptest.
+					NewRequest(http.MethodGet, "/", nil).
+					WithContext(context.Background())
+
+				valueOf := getFields(&actual, "PathInt")
+
+				err := setter.Path(valueOf, req, "int")
+
+				So(err, ShouldBeNil)
+				So(actual.PathInt, ShouldBeZeroValue)
+				mock.AssertExpectationsForObjects(t, bag...)
+			})
+			Convey("context value is wrong type", func() {
+				req := httptest.
+					NewRequest(http.MethodGet, "/", nil).
+					WithContext(context.WithValue(context.Background(), chi.RouteCtxKey, map[string]string{}))
+
+				valueOf := getFields(&actual, "PathInt")
+
+				err := setter.Path(valueOf, req, "int")
+
+				So(err, ShouldBeNil)
+				So(actual.PathInt, ShouldBeZeroValue)
+				mock.AssertExpectationsForObjects(t, bag...)
+			})
+			Convey("invalid path param is passed", func() {
+				valueOf := getFields(&actual, "PathInt")
+
+				err := setter.Path(valueOf, req, "InT")
+
+				So(err, ShouldBeNil)
+				So(actual.PathInt, ShouldBeZeroValue)
+				mock.AssertExpectationsForObjects(t, bag...)
+			})
+		})
+	})
 }
 
 func TestRequestHandlerSetter_Query(t *testing.T) {

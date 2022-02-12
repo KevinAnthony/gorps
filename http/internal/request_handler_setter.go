@@ -53,18 +53,17 @@ func (r requestHandlerSetter) Header(value reflect.Value, req *http.Request, hea
 
 func (r requestHandlerSetter) Path(value reflect.Value,
 	req *http.Request, pathParam string) error {
-	val, ok := req.Context().Value(chi.RouteCtxKey).(*chi.Context)
+	chiContext, ok := req.Context().Value(chi.RouteCtxKey).(*chi.Context)
 	if !ok {
 		return nil
 	}
 
-	for i := range val.URLParams.Keys {
-		if val.URLParams.Keys[i] == pathParam {
-			return r.set(value, val.URLParams.Values[i])
-		}
+	str := chiContext.URLParam(pathParam)
+	if len(str) == 0 {
+		return nil
 	}
 
-	return nil
+	return r.set(value, str)
 }
 
 func (r requestHandlerSetter) Query(value reflect.Value, req *http.Request, query string) error {

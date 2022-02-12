@@ -42,13 +42,13 @@ func (r requestHandlerSetter) Body(value reflect.Value, typeOf reflect.Type, req
 		return err
 	}
 
-	return r.setStruct(value, typeOf, r.factory.CreateFromRequest(req), bts)
+	return r.setStruct(value, r.factory.CreateFromRequest(req), bts)
 }
 
 func (r requestHandlerSetter) Header(value reflect.Value, typeOf reflect.Type, req *http.Request, header string) error {
 	headerStr := req.Header.Get(header)
 
-	return r.set(value, typeOf, req, headerStr)
+	return r.set(value, headerStr)
 }
 
 func (r requestHandlerSetter) Path(value reflect.Value, typeOf reflect.Type,
@@ -60,7 +60,7 @@ func (r requestHandlerSetter) Path(value reflect.Value, typeOf reflect.Type,
 
 	for i := range val.URLParams.Keys {
 		if val.URLParams.Keys[i] == pathParam {
-			return r.set(value, typeOf, req, val.URLParams.Values[i])
+			return r.set(value, val.URLParams.Values[i])
 		}
 	}
 
@@ -70,5 +70,5 @@ func (r requestHandlerSetter) Path(value reflect.Value, typeOf reflect.Type,
 func (r requestHandlerSetter) Query(value reflect.Value, typeOf reflect.Type, req *http.Request, query string) error {
 	queryStr := req.URL.Query().Get(query)
 
-	return r.set(value, typeOf, req, queryStr)
+	return r.set(value, queryStr)
 }

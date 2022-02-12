@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"net/http"
 	"reflect"
 	"strconv"
 
@@ -12,7 +11,7 @@ import (
 )
 
 //nolint: cyclop // this is just a big switch, nothing complex
-func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req *http.Request, str string) error {
+func (r requestHandlerSetter) set(value reflect.Value, str string) error {
 	if len(str) == 0 {
 		return nil
 	}
@@ -32,10 +31,10 @@ func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req 
 		//nolint: exhaustive
 		switch value.Kind() {
 		case reflect.Struct, reflect.Map:
-			return r.setStruct(value, typeOf, encoder.NewJSON(), []byte(str))
+			return r.setStruct(value, encoder.NewJSON(), []byte(str))
 		case reflect.Ptr:
 			if value.Type().Elem().Kind() == reflect.Struct {
-				return r.setStruct(value, value.Type(), encoder.NewJSON(), []byte(str))
+				return r.setStruct(value, encoder.NewJSON(), []byte(str))
 			}
 		default:
 			return fmt.Errorf("unsupported kind: %s", value.Kind())
@@ -45,7 +44,7 @@ func (r requestHandlerSetter) set(value reflect.Value, typeOf reflect.Type, req 
 	}
 }
 
-func (r requestHandlerSetter) setStruct(value reflect.Value, typeOf reflect.Type, enc encoder.Encoder, bts []byte) error {
+func (r requestHandlerSetter) setStruct(value reflect.Value, enc encoder.Encoder, bts []byte) error {
 	if !value.IsValid() {
 		return errors.New("bad body value")
 	}
@@ -56,7 +55,7 @@ func (r requestHandlerSetter) setStruct(value reflect.Value, typeOf reflect.Type
 
 	isPtr := value.Elem().Type().Kind() == reflect.Ptr
 
-	typeOf = value.Elem().Type()
+	typeOf := value.Elem().Type()
 	if isPtr {
 		typeOf = value.Elem().Type().Elem()
 	}

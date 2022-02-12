@@ -598,7 +598,7 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 }
 
 func getFields(t *testx.TestStruct, name string) reflect.Value {
-	valueOf := reflect.ValueOf(t).Elem().FieldByName(name).Addr()
+	valueOf := reflect.ValueOf(t).Elem().FieldByName(name)
 
 	return valueOf
 }

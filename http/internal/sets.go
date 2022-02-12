@@ -16,7 +16,7 @@ func (r requestHandlerSetter) set(value reflect.Value, str string) error {
 		return nil
 	}
 
-	switch value.Elem().Interface().(type) {
+	switch value.Interface().(type) {
 	case int, int8, int16, int32, int64:
 		return r.setInt(value, str)
 	case string:
@@ -49,15 +49,15 @@ func (r requestHandlerSetter) setStruct(value reflect.Value, enc encoder.Encoder
 		return errors.New("bad body value")
 	}
 
-	if !value.Elem().CanSet() {
+	if !value.CanSet() {
 		return errors.New("cannot set value to type")
 	}
 
-	isPtr := value.Elem().Type().Kind() == reflect.Ptr
+	isPtr := value.Type().Kind() == reflect.Ptr
 
-	typeOf := value.Elem().Type()
+	typeOf := value.Type()
 	if isPtr {
-		typeOf = value.Elem().Type().Elem()
+		typeOf = value.Type().Elem()
 	}
 
 	dst := reflect.New(typeOf).Interface()
@@ -68,12 +68,12 @@ func (r requestHandlerSetter) setStruct(value reflect.Value, enc encoder.Encoder
 
 	dstValue := reflect.ValueOf(dst)
 	if isPtr {
-		value.Elem().Set(dstValue)
+		value.Set(dstValue)
 
 		return nil
 	}
 
-	value.Elem().Set(dstValue.Elem())
+	value.Set(dstValue.Elem())
 
 	return nil
 }
@@ -84,7 +84,7 @@ func (r requestHandlerSetter) setBool(value reflect.Value, str string) error {
 		return err
 	}
 
-	value.Elem().SetBool(b)
+	value.SetBool(b)
 
 	return nil
 }
@@ -95,13 +95,13 @@ func (r requestHandlerSetter) setInt(value reflect.Value, str string) error {
 		return err
 	}
 
-	value.Elem().SetInt(i)
+	value.SetInt(i)
 
 	return nil
 }
 
 func (r requestHandlerSetter) setString(value reflect.Value, str string) error {
-	value.Elem().SetString(str)
+	value.SetString(str)
 
 	return nil
 }
@@ -112,7 +112,7 @@ func (r requestHandlerSetter) setFloat(value reflect.Value, str string) error {
 		return err
 	}
 
-	value.Elem().SetFloat(i)
+	value.SetFloat(i)
 
 	return nil
 }
@@ -123,7 +123,7 @@ func (r requestHandlerSetter) setUint(value reflect.Value, str string) error {
 		return err
 	}
 
-	value.Elem().SetUint(i)
+	value.SetUint(i)
 
 	return nil
 }

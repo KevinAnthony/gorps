@@ -21,10 +21,20 @@ type requestHandler struct {
 	helper internal.RequestHandlerHelper
 }
 
-func NewRequestHandler() RequestHandler {
-	return &requestHandler{
-		helper: internal.NewRequestHandlerHelper(),
+func NewRequestHandler(helper internal.RequestHandlerHelper) RequestHandler {
+	if helper == nil {
+		panic("request handler helper is required")
 	}
+
+	return &requestHandler{
+		helper: helper,
+	}
+}
+
+func NewRequestHandlerHelper() internal.RequestHandlerHelper {
+	return internal.NewRequestHandlerHelper(
+		internal.NewRequestHandlerSetter(
+			encoder.NewFactory()))
 }
 
 func (rh requestHandler) MarshalAndVerify(r *http.Request, dst interface{}) error {
@@ -46,9 +56,9 @@ func (rh requestHandler) Handle(f RequestHandlerFunc) http.HandlerFunc {
 }
 
 func write(w http.ResponseWriter, r *http.Request, statusCode int, src interface{}) {
-	encoder := encoder.NewFactory().CreateFromRequest(r)
+	enc := encoder.NewFactory().CreateFromRequest(r)
 
-	bts, err := encoder.Encode(src)
+	bts, err := enc.Encode(src)
 	if err != nil {
 		// TODO standard error object
 		w.WriteHeader(http.StatusBadRequest)
@@ -62,7 +72,7 @@ func write(w http.ResponseWriter, r *http.Request, statusCode int, src interface
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-	w.Header().Add(header.ContentType, encoder.GetMime())
+	w.Header().Add(header.ContentType, enc.GetMime())
 	w.Header().Add(header.ContentLength, strconv.Itoa(len(bts)))
 
 	w.WriteHeader(statusCode)

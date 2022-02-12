@@ -5,9 +5,13 @@ import (
 	"reflect"
 )
 
-func NewRequestHandlerHelper() RequestHandlerHelper {
+func NewRequestHandlerHelper(setter RequestHandlerSetter) RequestHandlerHelper {
+	if setter == nil {
+		panic("request handler setter is required")
+	}
+
 	return &requestHandlerHelper{
-		setter: NewRequestHandlerSetter(nil),
+		setter: setter,
 	}
 }
 

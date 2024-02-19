@@ -1,23 +1,26 @@
 package http
 
 import (
-	"io/ioutil"
+	"io"
 	native "net/http"
 	"strings"
 
-	"github.com/kevinanthony/gorps/encoder"
+	"github.com/kevinanthony/gorps/v2/encoder"
 
 	"github.com/pkg/errors"
 )
 
-var (
-	errBadRequest = errors.New("bad requestBroker")
-)
+var errBadRequest = errors.New("bad requestBroker")
 
+//go:generate mockery --srcpkg=io --name=ReadCloser --structname=BodyMock --filename=body_mock.go --output . --outpkg=http
+
+//go:generate mockery --name=Client --structname=ClientMock --filename=client_mock.go --inpackage
 type Client interface {
-	Do(req *native.Request, dst interface{}) error
+	DoAndUnmarshal(req *native.Request, v interface{}) error
+	Do(req *native.Request) ([]byte, error)
 }
 
+//go:generate mockery --name=Native --structname=NativeMock --filename=native_mock.go --inpackage
 type Native interface {
 	Do(req *native.Request) (*native.Response, error)
 }
@@ -46,7 +49,7 @@ func NewClient(nativeClient Native, enc encoder.Factory) Client {
 	}
 }
 
-func (c client) Do(req *native.Request, dst interface{}) error {
+func (c client) DoAndUnmarshal(req *native.Request, dst interface{}) error {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return err
@@ -58,7 +61,7 @@ func (c client) Do(req *native.Request, dst interface{}) error {
 		}
 	}()
 
-	bts, err := ioutil.ReadAll(resp.Body)
+	bts, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -73,4 +76,29 @@ func (c client) Do(req *native.Request, dst interface{}) error {
 	}
 
 	return c.encFactory.CreateFromResponse(resp).Decode(bts, dst)
+}
+
+func (c client) Do(req *native.Request) ([]byte, error) {
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if resp.Body != nil {
+			_ = resp.Body.Close()
+		}
+	}()
+
+	bts, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= native.StatusBadRequest {
+		return nil, errors.Wrapf(errBadRequest, "%d: %s",
+			resp.StatusCode, strings.Trim(string(bts), "\""))
+	}
+
+	return bts, nil
 }

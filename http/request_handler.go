@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kevinanthony/gorps/encoder"
-	"github.com/kevinanthony/gorps/header"
-	"github.com/kevinanthony/gorps/http/internal"
+	"github.com/kevinanthony/gorps/v2/encoder"
+	"github.com/kevinanthony/gorps/v2/header"
+	"github.com/kevinanthony/gorps/v2/http/internal"
 )
 
 type RequestHandlerFunc func(ctx context.Context, r *http.Request) (interface{}, error)

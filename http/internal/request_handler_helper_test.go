@@ -6,12 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kevinanthony/gorps/encoder"
-	"github.com/kevinanthony/gorps/http"
-	"github.com/kevinanthony/gorps/http/internal"
-	"github.com/kevinanthony/gorps/internal/testx"
+	"github.com/kevinanthony/gorps/v2/encoder"
+	"github.com/kevinanthony/gorps/v2/http"
+	"github.com/kevinanthony/gorps/v2/http/internal"
+	"github.com/kevinanthony/gorps/v2/internal/testx"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )

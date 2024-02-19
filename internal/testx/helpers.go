@@ -3,9 +3,8 @@ package testx
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 
-	"github.com/kevinanthony/gorps/encoder"
+	"github.com/kevinanthony/gorps/v2/encoder"
 )
 
 func ToReadCloser(enc encoder.Encoder, in interface{}) io.ReadCloser {
@@ -14,7 +13,7 @@ func ToReadCloser(enc encoder.Encoder, in interface{}) io.ReadCloser {
 		panic(err)
 	}
 
-	return ioutil.NopCloser(bytes.NewReader(b))
+	return io.NopCloser(bytes.NewReader(b))
 }
 
 func GetTestStruct() TestStruct {
@@ -54,6 +53,7 @@ func getJSONGambit() JSONGambit {
 		BoolP:   b2p(true),
 	}
 }
+
 func getJSONGambitPtr() *JSONGambit {
 	return &JSONGambit{
 		String:  "json",

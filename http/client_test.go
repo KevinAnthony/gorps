@@ -3,13 +3,13 @@ package http_test
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"io"
 	native "net/http"
 	"testing"
 
-	"github.com/kevinanthony/gorps/encoder"
+	"github.com/kevinanthony/gorps/v2/encoder"
+	"github.com/kevinanthony/gorps/v2/http"
 
-	"github.com/kevinanthony/gorps/http"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -53,10 +53,10 @@ func TestNewClient(t *testing.T) {
 	})
 }
 
-func TestClient_Do(t *testing.T) {
+func TestClient_DoAndUnmarshal(t *testing.T) {
 	t.Parallel()
 
-	Convey("Do", t, func() {
+	Convey("DoAndUnmarshal", t, func() {
 		req, err := native.NewRequest(http.MethodGet, "https://test.com/test", nil)
 		So(err, ShouldBeNil)
 
@@ -76,7 +76,7 @@ func TestClient_Do(t *testing.T) {
 				Convey("and body is empty", func() {
 					doCall.Return(newResponse(native.StatusOK, nil), nil)
 
-					err := client.Do(req, &blank)
+					err := client.DoAndUnmarshal(req, &blank)
 
 					So(err, ShouldBeNil)
 					mock.AssertExpectationsForObjects(t, mocks...)
@@ -99,7 +99,7 @@ func TestClient_Do(t *testing.T) {
 						*tmp = expected
 					})
 
-					err := client.Do(req, &actual)
+					err := client.DoAndUnmarshal(req, &actual)
 
 					So(err, ShouldBeNil)
 					So(actual, ShouldResemble, expected)
@@ -110,7 +110,7 @@ func TestClient_Do(t *testing.T) {
 		Convey("should return error when", func() {
 			Convey("http do returns error", func() {
 				doCall.Return(nil, errors.New("this is my boomstick"))
-				err := client.Do(req, nil)
+				err := client.DoAndUnmarshal(req, nil)
 
 				So(err, ShouldBeError, "this is my boomstick")
 				mock.AssertExpectationsForObjects(t, mocks...)
@@ -118,7 +118,7 @@ func TestClient_Do(t *testing.T) {
 			Convey("http response is >= 400", func() {
 				doCall.Return(newResponse(native.StatusTeapot, "you are a teapot"), nil)
 
-				err := client.Do(req, &blank)
+				err := client.DoAndUnmarshal(req, &blank)
 
 				So(err, ShouldBeError, "418: you are a teapot: bad requestBroker")
 				mock.AssertExpectationsForObjects(t, mocks...)
@@ -131,7 +131,7 @@ func TestClient_Do(t *testing.T) {
 
 				doCall.Return(resp, nil)
 
-				err := client.Do(req, &blank)
+				err := client.DoAndUnmarshal(req, &blank)
 
 				So(err, ShouldBeError, "everybody bock mock")
 				mock.AssertExpectationsForObjects(t, mocks...)
@@ -143,7 +143,7 @@ func TestClient_Do(t *testing.T) {
 				factoryMock.On("CreateFromResponse", resp).Return(encoderMock).Once()
 				encoderMock.On("Decode", mock.Anything, mock.Anything).Return(errors.New("error decoding"))
 
-				err := client.Do(req, &blank)
+				err := client.DoAndUnmarshal(req, &blank)
 
 				So(err, ShouldBeError, "error decoding")
 				mock.AssertExpectationsForObjects(t, mocks...)
@@ -165,7 +165,7 @@ func newResponse(status int, data interface{}) *native.Response {
 	}
 
 	return &native.Response{
-		Body:       ioutil.NopCloser(bytes.NewReader(body)),
+		Body:       io.NopCloser(bytes.NewReader(body)),
 		StatusCode: status,
 	}
 }

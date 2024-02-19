@@ -3,7 +3,7 @@ package internal_test
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -11,12 +11,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kevinanthony/gorps/encoder"
-	mocks "github.com/kevinanthony/gorps/http"
-	"github.com/kevinanthony/gorps/http/internal"
-	"github.com/kevinanthony/gorps/internal/testx"
+	"github.com/kevinanthony/gorps/v2/encoder"
+	mocks "github.com/kevinanthony/gorps/v2/http"
+	"github.com/kevinanthony/gorps/v2/http/internal"
+	"github.com/kevinanthony/gorps/v2/internal/testx"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -112,7 +112,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, bag...)
 				})
 				Convey("when body type fails to unmarshal", func() {
-					req := httptest.NewRequest(http.MethodGet, "/", ioutil.NopCloser(strings.NewReader("{")))
+					req := httptest.NewRequest(http.MethodGet, "/", io.NopCloser(strings.NewReader("{")))
 					factory.On("CreateFromRequest", req).Return(encoder.NewJSON()).Once()
 
 					err := setter.Body(valueOf, req)

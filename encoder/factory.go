@@ -4,7 +4,7 @@ import (
 	"mime"
 	"net/http"
 
-	"github.com/kevinanthony/gorps/header"
+	"github.com/kevinanthony/gorps/v2/header"
 )
 
 type Factory interface {
@@ -33,6 +33,8 @@ func (f factory) CreateFromRequest(req *http.Request) Encoder {
 
 func (f factory) FromMime(mediaType string) Encoder {
 	switch mediaType {
+	case TextXML:
+		return NewXML()
 	case ApplicationXML:
 		return NewXML()
 	case ApplicationJSON:

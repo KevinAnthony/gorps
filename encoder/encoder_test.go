@@ -15,10 +15,10 @@ type testStruct struct {
 }
 
 type subStrict struct {
-	String string  `json:"string" xml:"string"`
+	String string `json:"string" xml:"string"`
 
-	Int    int     `json:"int"    xml:"int"`
-	Float  float32 `json:"float"  xml:"flat"`
+	Int   int     `json:"int"   xml:"int"`
+	Float float32 `json:"float" xml:"flat"`
 }
 
 func newTestStruct() testStruct {

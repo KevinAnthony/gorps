@@ -1,13 +1,13 @@
 package internal
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 
-	"github.com/kevinanthony/gorps/encoder"
+	"github.com/kevinanthony/gorps/v2/encoder"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 const (
@@ -16,10 +16,10 @@ const (
 )
 
 type RequestHandlerSetter interface {
-	Body(reflect.Value, *http.Request) error
-	Header(reflect.Value, *http.Request, string) error
-	Path(reflect.Value, *http.Request, string) error
-	Query(reflect.Value, *http.Request, string) error
+	Body(value reflect.Value, req *http.Request) error
+	Header(value reflect.Value, req *http.Request, header string) error
+	Path(value reflect.Value, req *http.Request, path string) error
+	Query(value reflect.Value, req *http.Request, query string) error
 }
 
 type requestHandlerSetter struct {
@@ -37,7 +37,7 @@ func NewRequestHandlerSetter(factory encoder.Factory) RequestHandlerSetter {
 }
 
 func (r requestHandlerSetter) Body(value reflect.Value, req *http.Request) error {
-	bts, err := ioutil.ReadAll(req.Body)
+	bts, err := io.ReadAll(req.Body)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,8 @@ func (r requestHandlerSetter) Header(value reflect.Value, req *http.Request, hea
 }
 
 func (r requestHandlerSetter) Path(value reflect.Value,
-	req *http.Request, pathParam string) error {
+	req *http.Request, pathParam string,
+) error {
 	chiContext, ok := req.Context().Value(chi.RouteCtxKey).(*chi.Context)
 	if !ok {
 		return nil

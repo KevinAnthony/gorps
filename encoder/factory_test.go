@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	encoder2 "github.com/kevinanthony/gorps/encoder"
+	"github.com/kevinanthony/gorps/v2/encoder"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -14,9 +14,9 @@ func TestNewFactory(t *testing.T) {
 
 	Convey("NewFactory", t, func() {
 		Convey("should return new factory", func() {
-			f := encoder2.NewFactory()
+			f := encoder.NewFactory()
 
-			So(f, ShouldImplement, (*encoder2.Factory)(nil))
+			So(f, ShouldImplement, (*encoder.Factory)(nil))
 		})
 	})
 }
@@ -28,29 +28,29 @@ func TestFactoryMock_CreateFromResponse(t *testing.T) {
 		resp := &http.Response{
 			Header: http.Header{},
 		}
-		factory := encoder2.NewFactory()
+		factory := encoder.NewFactory()
 
 		Convey("should return json encoder", func() {
 			Convey("when content-type is empty", func() {
 				actual := factory.CreateFromResponse(resp)
 
-				So(actual, ShouldHaveSameTypeAs, encoder2.NewJSON())
+				So(actual, ShouldHaveSameTypeAs, encoder.NewJSON())
 			})
 			Convey("when content-type is application/json", func() {
-				resp.Header.Add("content-type", encoder2.ApplicationJSON)
+				resp.Header.Add("content-type", encoder.ApplicationJSON)
 
 				actual := factory.CreateFromResponse(resp)
 
-				So(actual, ShouldHaveSameTypeAs, encoder2.NewJSON())
+				So(actual, ShouldHaveSameTypeAs, encoder.NewJSON())
 			})
 		})
 		Convey("should return xml encoder", func() {
 			Convey("when content-type is application/xml", func() {
-				resp.Header.Add("content-type", encoder2.ApplicationXML)
+				resp.Header.Add("content-type", encoder.ApplicationXML)
 
 				actual := factory.CreateFromResponse(resp)
 
-				So(actual, ShouldHaveSameTypeAs, encoder2.NewXML())
+				So(actual, ShouldHaveSameTypeAs, encoder.NewXML())
 			})
 		})
 	})
@@ -63,29 +63,29 @@ func TestFactory_CreateFromRequest(t *testing.T) {
 		resp := &http.Request{
 			Header: http.Header{},
 		}
-		factory := encoder2.NewFactory()
+		factory := encoder.NewFactory()
 
 		Convey("should return json encoder", func() {
 			Convey("when accept is empty", func() {
 				actual := factory.CreateFromRequest(resp)
 
-				So(actual, ShouldHaveSameTypeAs, encoder2.NewJSON())
+				So(actual, ShouldHaveSameTypeAs, encoder.NewJSON())
 			})
 			Convey("when accept is application/json", func() {
-				resp.Header.Add("accept", encoder2.ApplicationJSON)
+				resp.Header.Add("accept", encoder.ApplicationJSON)
 
 				actual := factory.CreateFromRequest(resp)
 
-				So(actual, ShouldHaveSameTypeAs, encoder2.NewJSON())
+				So(actual, ShouldHaveSameTypeAs, encoder.NewJSON())
 			})
 		})
 		Convey("should return xml encoder", func() {
 			Convey("when accept is application/xml", func() {
-				resp.Header.Add("accept", encoder2.ApplicationXML)
+				resp.Header.Add("accept", encoder.ApplicationXML)
 
 				actual := factory.CreateFromRequest(resp)
 
-				So(actual, ShouldHaveSameTypeAs, encoder2.NewXML())
+				So(actual, ShouldHaveSameTypeAs, encoder.NewXML())
 			})
 		})
 	})

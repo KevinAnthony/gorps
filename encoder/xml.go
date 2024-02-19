@@ -2,8 +2,7 @@ package encoder
 
 import "encoding/xml"
 
-type xmlEncoder struct {
-}
+type xmlEncoder struct{}
 
 func NewXML() Encoder {
 	return xmlEncoder{}

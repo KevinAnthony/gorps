@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/kevinanthony/gorps/encoder"
+	"github.com/kevinanthony/gorps/v2/encoder"
 
 	"github.com/pkg/errors"
 )
 
-//nolint: cyclop // this is just a big switch, nothing complex
+//nolint:cyclop // this is just a big switch, nothing complex
 func (r requestHandlerSetter) set(value reflect.Value, str string) error {
 	if len(str) == 0 {
 		return nil

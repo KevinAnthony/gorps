@@ -9,11 +9,20 @@ linters:
     - gofumpt
     - ireturn
     - goerr113
+    - tagliatelle
+    - revive
+    - exhaustruct
+    - depguard
     #deprecated
     - scopelint
     - maligned
     - interfacer
     - golint
+    - ifshort
+    - nosnakecase
+    - structcheck
+    - varcheck
+    - deadcode
 
 issues:
   exclude-rules:

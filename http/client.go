@@ -17,7 +17,7 @@ var errBadRequest = errors.New("bad requestBroker")
 //go:generate mockery --name=Client --structname=ClientMock --filename=client_mock.go --inpackage
 type Client interface {
 	DoAndUnmarshal(req *native.Request, v interface{}) error
-	Do(req *native.Request) ([]byte, error)
+	Do(req *native.Request) (io.Reader, error)
 }
 
 //go:generate mockery --name=Native --structname=NativeMock --filename=native_mock.go --inpackage
@@ -78,7 +78,7 @@ func (c client) DoAndUnmarshal(req *native.Request, dst interface{}) error {
 	return c.encFactory.CreateFromResponse(resp).Decode(bts, dst)
 }
 
-func (c client) Do(req *native.Request) ([]byte, error) {
+func (c client) Do(req *native.Request) (io.Reader, error) {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -90,15 +90,15 @@ func (c client) Do(req *native.Request) ([]byte, error) {
 		}
 	}()
 
-	bts, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
 	if resp.StatusCode >= native.StatusBadRequest {
+		bts, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
 		return nil, errors.Wrapf(errBadRequest, "%d: %s",
 			resp.StatusCode, strings.Trim(string(bts), "\""))
 	}
 
-	return bts, nil
+	return resp.Body, nil
 }

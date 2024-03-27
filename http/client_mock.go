@@ -3,6 +3,7 @@
 package http
 
 import (
+	io "io"
 	nethttp "net/http"
 
 	mock "github.com/stretchr/testify/mock"
@@ -14,19 +15,19 @@ type ClientMock struct {
 }
 
 // Do provides a mock function with given fields: req
-func (_m *ClientMock) Do(req *nethttp.Request) ([]byte, error) {
+func (_m *ClientMock) Do(req *nethttp.Request) (io.Reader, error) {
 	ret := _m.Called(req)
 
-	var r0 []byte
+	var r0 io.Reader
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*nethttp.Request) ([]byte, error)); ok {
+	if rf, ok := ret.Get(0).(func(*nethttp.Request) (io.Reader, error)); ok {
 		return rf(req)
 	}
-	if rf, ok := ret.Get(0).(func(*nethttp.Request) []byte); ok {
+	if rf, ok := ret.Get(0).(func(*nethttp.Request) io.Reader); ok {
 		r0 = rf(req)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
+			r0 = ret.Get(0).(io.Reader)
 		}
 	}
 

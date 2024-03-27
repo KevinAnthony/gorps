@@ -79,16 +79,10 @@ func (c client) DoAndUnmarshal(req *native.Request, dst interface{}) error {
 }
 
 func (c client) Do(req *native.Request) (io.Reader, error) {
-	resp, err := c.client.Do(req)
+	resp, err := c.client.Do(req) //nolint:bodyclose // this gets passed upstream, it's for them to close
 	if err != nil {
 		return nil, err
 	}
-
-	defer func() {
-		if resp.Body != nil {
-			_ = resp.Body.Close()
-		}
-	}()
 
 	if resp.StatusCode >= native.StatusBadRequest {
 		bts, err := io.ReadAll(resp.Body)

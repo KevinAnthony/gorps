@@ -15,7 +15,7 @@ import (
 //go:generate mockery --name=RequestBroker --structname=RequestBrokerMock --filename=request_broker_mock.go --inpackage
 type RequestBroker interface {
 	DoAndUnmarshal(ctx context.Context, v interface{}) error
-	Do(ctx context.Context) ([]byte, error)
+	Do(ctx context.Context) (io.Reader, error)
 
 	Post() RequestBroker
 	Get() RequestBroker
@@ -114,7 +114,7 @@ func (r *requestBroker) DoAndUnmarshal(ctx context.Context, out interface{}) err
 	return r.client.DoAndUnmarshal(req, out)
 }
 
-func (r *requestBroker) Do(ctx context.Context) ([]byte, error) {
+func (r *requestBroker) Do(ctx context.Context) (io.Reader, error) {
 	req, err := r.CreateRequest(ctx)
 	if err != nil {
 		return nil, err

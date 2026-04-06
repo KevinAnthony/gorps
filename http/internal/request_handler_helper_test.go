@@ -6,12 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/kevinanthony/gorps/v2/encoder"
 	"github.com/kevinanthony/gorps/v2/http"
 	"github.com/kevinanthony/gorps/v2/http/internal"
 	"github.com/kevinanthony/gorps/v2/internal/testx"
-
-	"github.com/go-chi/chi/v5"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -21,6 +20,7 @@ func TestNewRequestHandlerHelper(t *testing.T) {
 
 	Convey("NewRequestHandlerHelper", t, func() {
 		setter := &internal.RequestHandlerSetterMock{}
+
 		Convey("should not panic", func() {
 			So(func() { internal.NewRequestHandlerHelper(setter) }, ShouldNotPanic)
 		})
@@ -57,7 +57,7 @@ func TestRequestHandlerHelper_Fill(t *testing.T) {
 			NewRequest(http.MethodGet, "/", testx.ToReadCloser(encoder.NewJSON(), expected.Body)).
 			WithContext(context.WithValue(context.Background(), chi.RouteCtxKey, cctx))
 
-		req.Header.Set("string", expected.HeaderString)
+		req.Header.Set("String", expected.HeaderString)
 		q := req.URL.Query()
 		q.Add("string", expected.QueryString)
 		req.URL.RawQuery = q.Encode()
@@ -87,6 +87,7 @@ func TestRequestHandlerHelper_Fill(t *testing.T) {
 		Convey("should return error when", func() {
 			Convey("set path returns an error", func() {
 				setPathCall.Return(errors.New("bad path")).Once()
+
 				err := helper.Fill(req, &actual)
 
 				So(err, ShouldBeError, "bad path")
@@ -108,6 +109,7 @@ func TestRequestHandlerHelper_Fill(t *testing.T) {
 				setQueryCall.Return(errors.New("bad query")).Once()
 				extraPath.Times(4)
 				extraHeader.Times(5)
+
 				err := helper.Fill(req, &actual)
 
 				So(err, ShouldBeError, "bad query")

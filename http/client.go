@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/kevinanthony/gorps/v2/encoder"
-
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +15,7 @@ var errBadRequest = errors.New("bad requestBroker")
 
 //go:generate mockery --name=Client --structname=ClientMock --filename=client_mock.go --inpackage
 type Client interface {
-	DoAndUnmarshal(req *native.Request, v interface{}) error
+	DoAndUnmarshal(req *native.Request, v any) error
 	Do(req *native.Request) (io.Reader, error)
 }
 
@@ -49,7 +48,7 @@ func NewClient(nativeClient Native, enc encoder.Factory) Client {
 	}
 }
 
-func (c client) DoAndUnmarshal(req *native.Request, dst interface{}) error {
+func (c client) DoAndUnmarshal(req *native.Request, dst any) error {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return err

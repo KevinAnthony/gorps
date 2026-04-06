@@ -7,7 +7,7 @@ import (
 	"github.com/kevinanthony/gorps/v2/encoder"
 )
 
-func ToReadCloser(enc encoder.Encoder, in interface{}) io.ReadCloser {
+func ToReadCloser(enc encoder.Encoder, in any) io.ReadCloser {
 	b, err := enc.Encode(in)
 	if err != nil {
 		panic(err)
@@ -95,15 +95,15 @@ type TestStruct struct {
 
 type JSONGambit struct {
 	String  string   `json:"string"`
-	StringP *string  `json:"string_2"`
+	StringP *string  `json:"string_p"`
 	Int     int      `json:"int"`
-	IntP    *int     `json:"int_2"`
+	IntP    *int     `json:"int_p"`
 	UInt    uint     `json:"uint"`
-	UIntP   *uint    `json:"uint_2"`
+	UIntP   *uint    `json:"uint_p"`
 	Float   float64  `json:"float"`
-	FloatP  *float64 `json:"float_2"`
+	FloatP  *float64 `json:"float_p"`
 	Bool    bool     `json:"bool"`
-	BoolP   *bool    `json:"bool_2"`
+	BoolP   *bool    `json:"bool_p"`
 }
 
 func s2p(s string) *string {

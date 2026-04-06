@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/kevinanthony/gorps/v2/encoder"
-
 	. "github.com/smartystreets/goconvey/convey"
 )
 

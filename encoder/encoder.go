@@ -11,7 +11,7 @@ const (
 )
 
 type Encoder interface {
-	Encode(data interface{}) ([]byte, error)
-	Decode(data []byte, dst interface{}) error
+	Encode(data any) ([]byte, error)
+	Decode(data []byte, dst any) error
 	GetMime() string
 }

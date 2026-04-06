@@ -1,69 +1,92 @@
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - godox
-    - godot
-    - exhaustivestruct
-    - gci
     - wrapcheck
-    - gofumpt
-    - ireturn
-    - goerr113
     - tagliatelle
-    - revive
     - exhaustruct
+    - err113
+    - revive
+    - mnd
+    - lll
+    - ireturn
+    - godox
+    - funcorder
     - depguard
-    #deprecated
-    - scopelint
-    - maligned
-    - interfacer
-    - golint
-    - ifshort
-    - nosnakecase
-    - structcheck
-    - varcheck
-    - deadcode
-
-issues:
-  exclude-rules:
-    - path: helpers.go
-      linters:
-        - gomnd
-    - path: _test\.go
-      linters:
-        - bodyclose
-        - funlen
-        - goconst
-        - dupl
-        - lll
-        - unparam
-        - forcetypeassert
-        - gocritic
-        - contextcheck
-        - varnamelen
-        - gomnd
-        - gochecknoglobals
-    - path: mock\.go
-      linters:
-        - funlen
-        - goconst
-        - dupl
-        - lll
-        - unparam
-        - forcetypeassert
-        - gomnd
-
-linters-settings:
-  tagliatelle:
-    case:
-      rules:
-        json: snake
-  varnamelen:
-    max-distance: 5
-    min-name-length: 3
-    ignore-type-assert-ok: true
-    ignore-map-index-ok: true
-    ignore-chan-recv-ok: true
-    ignore-names:
-      - w
-      - r
+  settings:
+    tagalign:
+      strict: true
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+        use-field-name: true
+    varnamelen:
+      max-distance: 5
+      min-name-length: 3
+      ignore-names:
+        - err
+        - w
+        - r
+        - ch
+        - i
+        - q
+      ignore-type-assert-ok: true
+      ignore-map-index-ok: true
+      ignore-chan-recv-ok: true
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - bodyclose
+          - dupl
+          - errchkjson
+          - errorlint
+          - fatcontext
+          - forcetypeassert
+          - funlen
+          - goconst
+          - maintidx
+          - noctx
+          - paralleltest
+          - revive
+        path: _test\.go
+      - linters:
+          - dupl
+          - forcetypeassert
+        path: _mock\.go
+      - linters:
+          - revive
+        text: 'var-naming: avoid meaningless package names'
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      custom-order: true
+      sections:
+        - standard
+        - prefix(github.com/KevinAnthony)
+        - default
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

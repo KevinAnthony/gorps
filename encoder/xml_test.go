@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/kevinanthony/gorps/v2/encoder"
-
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -52,6 +51,7 @@ func TestXmlEncoder_Decode(t *testing.T) {
 
 		expected := newTestStruct()
 		expected.Map = nil
+
 		var actual testStruct
 
 		Convey("should return json string for structure", func() {

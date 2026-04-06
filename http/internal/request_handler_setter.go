@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/kevinanthony/gorps/v2/encoder"
-
 	"github.com/go-chi/chi/v5"
+	"github.com/kevinanthony/gorps/v2/encoder"
 )
 
 const (

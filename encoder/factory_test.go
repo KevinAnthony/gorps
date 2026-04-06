@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/kevinanthony/gorps/v2/encoder"
-
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -37,7 +36,7 @@ func TestFactoryMock_CreateFromResponse(t *testing.T) {
 				So(actual, ShouldHaveSameTypeAs, encoder.NewJSON())
 			})
 			Convey("when content-type is application/json", func() {
-				resp.Header.Add("content-type", encoder.ApplicationJSON)
+				resp.Header.Add("Content-Type", encoder.ApplicationJSON)
 
 				actual := factory.CreateFromResponse(resp)
 
@@ -46,7 +45,7 @@ func TestFactoryMock_CreateFromResponse(t *testing.T) {
 		})
 		Convey("should return xml encoder", func() {
 			Convey("when content-type is application/xml", func() {
-				resp.Header.Add("content-type", encoder.ApplicationXML)
+				resp.Header.Add("Content-Type", encoder.ApplicationXML)
 
 				actual := factory.CreateFromResponse(resp)
 
@@ -72,7 +71,7 @@ func TestFactory_CreateFromRequest(t *testing.T) {
 				So(actual, ShouldHaveSameTypeAs, encoder.NewJSON())
 			})
 			Convey("when accept is application/json", func() {
-				resp.Header.Add("accept", encoder.ApplicationJSON)
+				resp.Header.Add("Accept", encoder.ApplicationJSON)
 
 				actual := factory.CreateFromRequest(resp)
 
@@ -81,7 +80,7 @@ func TestFactory_CreateFromRequest(t *testing.T) {
 		})
 		Convey("should return xml encoder", func() {
 			Convey("when accept is application/xml", func() {
-				resp.Header.Add("accept", encoder.ApplicationXML)
+				resp.Header.Add("Accept", encoder.ApplicationXML)
 
 				actual := factory.CreateFromRequest(resp)
 

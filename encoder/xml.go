@@ -8,11 +8,11 @@ func NewXML() Encoder {
 	return xmlEncoder{}
 }
 
-func (x xmlEncoder) Encode(data interface{}) ([]byte, error) {
+func (x xmlEncoder) Encode(data any) ([]byte, error) {
 	return xml.Marshal(data)
 }
 
-func (x xmlEncoder) Decode(data []byte, dst interface{}) error {
+func (x xmlEncoder) Decode(data []byte, dst any) error {
 	return xml.Unmarshal(data, dst)
 }
 

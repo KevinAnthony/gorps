@@ -14,7 +14,7 @@ import (
 //nolint:interfacebloat
 //go:generate mockery --name=RequestBroker --structname=RequestBrokerMock --filename=request_broker_mock.go --inpackage
 type RequestBroker interface {
-	DoAndUnmarshal(ctx context.Context, v interface{}) error
+	DoAndUnmarshal(ctx context.Context, v any) error
 	Do(ctx context.Context) (io.Reader, error)
 
 	Post() RequestBroker
@@ -105,7 +105,7 @@ func (r *requestBroker) Body(bytes string) RequestBroker {
 	return r
 }
 
-func (r *requestBroker) DoAndUnmarshal(ctx context.Context, out interface{}) error {
+func (r *requestBroker) DoAndUnmarshal(ctx context.Context, out any) error {
 	req, err := r.CreateRequest(ctx)
 	if err != nil {
 		return err

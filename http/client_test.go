@@ -9,7 +9,6 @@ import (
 
 	"github.com/kevinanthony/gorps/v2/encoder"
 	"github.com/kevinanthony/gorps/v2/http"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -64,7 +63,7 @@ func TestClient_DoAndUnmarshal(t *testing.T) {
 		clientMock := &http.NativeMock{}
 		encoderMock := &encoder.Mock{}
 		bodyMock := &http.BodyMock{}
-		mocks := []interface{}{factoryMock, clientMock, encoderMock, bodyMock}
+		mocks := []any{factoryMock, clientMock, encoderMock, bodyMock}
 
 		client := http.NewClient(clientMock, factoryMock)
 
@@ -85,7 +84,9 @@ func TestClient_DoAndUnmarshal(t *testing.T) {
 					type T struct {
 						Int int `json:"int"`
 					}
+
 					var actual T
+
 					expected := T{Int: 1}
 
 					resp := newResponse(native.StatusOK, actual)
@@ -110,6 +111,7 @@ func TestClient_DoAndUnmarshal(t *testing.T) {
 		Convey("should return error when", func() {
 			Convey("http do returns error", func() {
 				doCall.Return(nil, errors.New("this is my boomstick"))
+
 				err := client.DoAndUnmarshal(req, nil)
 
 				So(err, ShouldBeError, "this is my boomstick")
@@ -152,7 +154,7 @@ func TestClient_DoAndUnmarshal(t *testing.T) {
 	})
 }
 
-func newResponse(status int, data interface{}) *native.Response {
+func newResponse(status int, data any) *native.Response {
 	var body []byte
 
 	if data != nil {

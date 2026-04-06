@@ -16,18 +16,18 @@ func NewRequestHandlerHelper(setter RequestHandlerSetter) RequestHandlerHelper {
 }
 
 type RequestHandlerHelper interface {
-	Fill(r *http.Request, dst interface{}) error
+	Fill(r *http.Request, dst any) error
 }
 
 type requestHandlerHelper struct {
 	setter RequestHandlerSetter
 }
 
-func (h requestHandlerHelper) Fill(r *http.Request, dst interface{}) error {
+func (h requestHandlerHelper) Fill(r *http.Request, dst any) error {
 	elementsValue := reflect.ValueOf(dst).Elem()
 	elementsType := reflect.TypeOf(dst).Elem()
 
-	for i := 0; i < elementsValue.NumField(); i++ {
+	for i := range elementsValue.NumField() {
 		value := elementsValue.Field(i)
 		typeOf := elementsType.Field(i)
 

@@ -10,11 +10,11 @@ import (
 	"github.com/kevinanthony/gorps/v2/http/internal"
 )
 
-type RequestHandlerFunc func(ctx context.Context, r *http.Request) (interface{}, error)
+type RequestHandlerFunc func(ctx context.Context, r *http.Request) (any, error)
 
 type RequestHandler interface {
 	Handle(f RequestHandlerFunc) http.HandlerFunc
-	MarshalAndVerify(r *http.Request, dst interface{}) error
+	MarshalAndVerify(r *http.Request, dst any) error
 }
 
 type requestHandler struct {
@@ -37,7 +37,7 @@ func NewRequestHandlerHelper() internal.RequestHandlerHelper {
 			encoder.NewFactory()))
 }
 
-func (rh requestHandler) MarshalAndVerify(r *http.Request, dst interface{}) error {
+func (rh requestHandler) MarshalAndVerify(r *http.Request, dst any) error {
 	return rh.helper.Fill(r, dst)
 }
 
@@ -55,7 +55,7 @@ func (rh requestHandler) Handle(f RequestHandlerFunc) http.HandlerFunc {
 	}
 }
 
-func write(w http.ResponseWriter, r *http.Request, statusCode int, src interface{}) {
+func write(w http.ResponseWriter, r *http.Request, statusCode int, src any) {
 	enc := encoder.NewFactory().CreateFromRequest(r)
 
 	bts, err := enc.Encode(src)

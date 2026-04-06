@@ -11,12 +11,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/kevinanthony/gorps/v2/encoder"
 	mocks "github.com/kevinanthony/gorps/v2/http"
 	"github.com/kevinanthony/gorps/v2/http/internal"
 	"github.com/kevinanthony/gorps/v2/internal/testx"
-
-	"github.com/go-chi/chi/v5"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 )
@@ -44,7 +43,7 @@ func TestRequestHandlerSetter_Body(t *testing.T) {
 			factory := &encoder.FactoryMock{}
 			reader := &mocks.BodyMock{}
 
-			bag := []interface{}{factory, reader}
+			bag := []any{factory, reader}
 
 			setter := internal.NewRequestHandlerSetter(factory)
 
@@ -133,7 +132,7 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 	Convey("Header", t, func() {
 		factory := &encoder.FactoryMock{}
 
-		bag := []interface{}{factory}
+		bag := []any{factory}
 
 		setter := internal.NewRequestHandlerSetter(factory)
 
@@ -145,12 +144,12 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 		jsonHeader, err := encoder.NewJSON().Encode(expected.HeaderJSON)
 		So(err, ShouldBeNil)
 
-		req.Header.Set("string", expected.HeaderString)
-		req.Header.Set("int", "-2")
-		req.Header.Set("uint", "2")
-		req.Header.Set("float", ".2")
-		req.Header.Set("bool", "false")
-		req.Header.Set("json", string(jsonHeader))
+		req.Header.Set("String", expected.HeaderString)
+		req.Header.Set("Int", "-2")
+		req.Header.Set("Uint", "2")
+		req.Header.Set("Float", ".2")
+		req.Header.Set("Bool", "false")
+		req.Header.Set("Json", string(jsonHeader))
 
 		Convey("for type", func() {
 			Convey("string", func() {
@@ -175,7 +174,8 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, bag...)
 				})
 				Convey("when header not a valid number", func() {
-					req.Header.Set("int", "NaN")
+					req.Header.Set("Int", "NaN")
+
 					valueOf := getFields(&actual, "HeaderInt")
 
 					err := setter.Header(valueOf, req, "int")
@@ -195,7 +195,8 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, bag...)
 				})
 				Convey("when header is not a valid number", func() {
-					req.Header.Set("uint", "NaN")
+					req.Header.Set("Uint", "NaN")
+
 					valueOf := getFields(&actual, "HeaderUInt")
 
 					err := setter.Header(valueOf, req, "uint")
@@ -215,7 +216,8 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, bag...)
 				})
 				Convey("when header is NaN", func() {
-					req.Header.Set("float", "NaN")
+					req.Header.Set("Float", "NaN")
+
 					valueOf := getFields(&actual, "HeaderFloat")
 
 					err := setter.Header(valueOf, req, "float")
@@ -225,7 +227,8 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, bag...)
 				})
 				Convey("when header is not a valid number", func() {
-					req.Header.Set("float", "not a float")
+					req.Header.Set("Float", "not a float")
+
 					valueOf := getFields(&actual, "HeaderFloat")
 
 					err := setter.Header(valueOf, req, "float")
@@ -245,7 +248,8 @@ func TestRequestHandlerSetter_Header(t *testing.T) {
 					mock.AssertExpectationsForObjects(t, bag...)
 				})
 				Convey("when header is not a bool", func() {
-					req.Header.Set("bool", "maybe")
+					req.Header.Set("Bool", "maybe")
+
 					valueOf := getFields(&actual, "HeaderBool")
 
 					err := setter.Header(valueOf, req, "bool")
@@ -265,7 +269,7 @@ func TestRequestHandlerSetter_Path(t *testing.T) {
 	Convey("Path", t, func() {
 		factory := &encoder.FactoryMock{}
 
-		bag := []interface{}{factory}
+		bag := []any{factory}
 
 		setter := internal.NewRequestHandlerSetter(factory)
 
@@ -448,7 +452,7 @@ func TestRequestHandlerSetter_Query(t *testing.T) {
 	Convey("Query", t, func() {
 		factory := &encoder.FactoryMock{}
 
-		bag := []interface{}{factory}
+		bag := []any{factory}
 
 		setter := internal.NewRequestHandlerSetter(factory)
 

@@ -14,7 +14,7 @@ func (e *Mock) GetMime() string {
 	return e.Called().String(0)
 }
 
-func (e *Mock) Encode(data interface{}) ([]byte, error) {
+func (e *Mock) Encode(data any) ([]byte, error) {
 	args := e.Called(data)
 
 	var bts []byte
@@ -25,6 +25,6 @@ func (e *Mock) Encode(data interface{}) ([]byte, error) {
 	return bts, args.Error(1)
 }
 
-func (e *Mock) Decode(data []byte, dst interface{}) error {
+func (e *Mock) Decode(data []byte, dst any) error {
 	return e.Called(data, dst).Error(0)
 }

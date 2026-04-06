@@ -14,11 +14,11 @@ func NewJSON() Encoder {
 	}
 }
 
-func (j jsonEncoder) Encode(data interface{}) ([]byte, error) {
+func (j jsonEncoder) Encode(data any) ([]byte, error) {
 	return j.jit.Marshal(data)
 }
 
-func (j jsonEncoder) Decode(data []byte, dst interface{}) error {
+func (j jsonEncoder) Decode(data []byte, dst any) error {
 	return j.jit.Unmarshal(data, dst)
 }
 

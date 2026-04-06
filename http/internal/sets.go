@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/kevinanthony/gorps/v2/encoder"
-
 	"github.com/pkg/errors"
 )
 
@@ -62,7 +61,8 @@ func (r requestHandlerSetter) setStruct(value reflect.Value, enc encoder.Encoder
 
 	dst := reflect.New(typeOf).Interface()
 
-	if err := enc.Decode(bts, &dst); err != nil {
+	err := enc.Decode(bts, &dst)
+	if err != nil {
 		return errors.Wrapf(err, "decode %s", enc.GetMime())
 	}
 
